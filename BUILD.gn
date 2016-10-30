@@ -1,0 +1,53 @@
+component("crtc") {
+  if (is_win) {
+    defines = [
+      "CRTC_OS_WIN"
+    ]
+  } else {
+    defines = [
+      "CRTC_OS_POSIX"
+    ]
+  }
+
+  sources = [
+    "src/async.cc",
+    "src/events.cc",
+    "src/rtcpeerconnection.cc",
+  ]
+
+  deps = [
+    "//webrtc:webrtc_common",
+    "//webrtc/base:rtc_base",
+    "//webrtc/base:rtc_base_approved",
+    "//webrtc/api:libjingle_peerconnection",
+    "//webrtc/system_wrappers:field_trial_default",
+    "//webrtc/system_wrappers:metrics_default",
+  ]
+
+  include_dirs = [
+    "include"
+  ]
+
+  cflags = [ 
+    "-Wno-deprecated-declarations",
+    "-Wno-nonnull",
+    "-Wno-objc-missing-property-synthesis",
+    "-Wno-semicolon-before-method-body",
+    "-Wno-unused-variable",
+    "-Wno-inconsistent-missing-override",
+  ]
+}
+
+executable("test-promise") {
+  sources = [
+    "test/test-promise.cc",
+  ]
+
+  deps = [
+    ":crtc",
+  ]
+
+  include_dirs = [
+    "include"
+  ]
+}
