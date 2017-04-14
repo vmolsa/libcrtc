@@ -1,46 +1,76 @@
+declare_args() {
+  build_with_chromium = false
+}
+
+import("//webrtc/webrtc.gni")
+
 component("crtc") {
+  libs = []
+  defines = [
+    "NDEBUG",
+  ]
+
+  sources = [
+    "src/atomic.cc",
+    "src/event.cc",
+    "src/error.cc",
+    "src/arraybuffer.cc",
+    "src/worker.cc",
+    "src/async.cc",
+    "src/module.cc",
+    "src/rtcpeerconnection.cc",
+    "src/rtcdatachannel.cc",
+    "src/mediastream.cc",
+    "src/mediastreamtrack.cc",
+    "src/audiosink.cc",
+    "src/videosource.cc",
+    "src/videosink.cc",
+    "src/i420p.cc",
+    "src/time.cc",
+    "src/audiobuffer.cc",
+    "src/audiosource.cc",
+  ]
+
   if (is_win) {
-    defines = [
+    defines += [
       "CRTC_OS_WIN"
     ]
   } else {
-    defines = [
+    defines += [
       "CRTC_OS_POSIX"
     ]
   }
 
-  sources = [
-    "src/async.cc",
-    "src/events.cc",
-    "src/rtcpeerconnection.cc",
+  if (is_mac) {
+    defines += [
+      "CRTC_OS_OSX"
+    ]
+  }
+
+  cflags = [
+    "-fexceptions",
+  ]
+
+  cflags_cc = [
+    "-fexceptions",
   ]
 
   deps = [
-    "//webrtc:webrtc_common",
-    "//webrtc/base:rtc_base",
-    "//webrtc/base:rtc_base_approved",
-    "//webrtc/api:libjingle_peerconnection",
+    "//third_party/libyuv",
+    "//webrtc/pc:libjingle_peerconnection",
     "//webrtc/system_wrappers:field_trial_default",
     "//webrtc/system_wrappers:metrics_default",
   ]
 
   include_dirs = [
-    "include"
-  ]
-
-  cflags = [ 
-    "-Wno-deprecated-declarations",
-    "-Wno-nonnull",
-    "-Wno-objc-missing-property-synthesis",
-    "-Wno-semicolon-before-method-body",
-    "-Wno-unused-variable",
-    "-Wno-inconsistent-missing-override",
+    "src/protobuf",
+    "include",
   ]
 }
 
-executable("test-promise") {
+executable("promise") {
   sources = [
-    "test/test-promise.cc",
+    "examples/promise.cc",
   ]
 
   deps = [
@@ -51,3 +81,85 @@ executable("test-promise") {
     "include"
   ]
 }
+
+executable("mesh") {
+  sources = [
+    "examples/mesh.cc",
+  ]
+
+  deps = [
+    ":crtc",
+  ]
+
+  include_dirs = [
+    "include"
+  ]
+}
+
+executable("peerconnection") {
+  sources = [
+    "examples/peerconnection.cc",
+  ]
+
+  deps = [
+    ":crtc",
+  ]
+
+  include_dirs = [
+    "include"
+  ]
+}
+
+executable("worker") {
+  sources = [
+    "examples/worker.cc",
+  ]
+
+  deps = [
+    ":crtc",
+  ]
+
+  include_dirs = [
+    "include"
+  ]
+}
+
+executable("source-sink") {
+  sources = [
+    "examples/source-sink.cc",
+  ]
+
+  deps = [
+    ":crtc",
+  ]
+
+  include_dirs = [
+    "include"
+  ]
+}
+
+executable("ffmpeg") {
+  sources = [
+    "examples/ffmpeg.cc",
+  ]
+
+  deps = [
+    ":crtc",
+  ]
+
+  include_dirs = [
+    "include"
+  ]
+}
+
+group("crtc-examples") {
+  public_deps = [
+    ":promise",
+    ":mesh",
+    ":peerconnection",
+    ":worker",
+    ":source-sink",
+    ":ffmpeg",
+  ]
+}
+

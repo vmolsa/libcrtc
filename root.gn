@@ -1,4 +1,4 @@
-group("root") {
+group("default") {
   deps = [
     "//crtc",
   ]

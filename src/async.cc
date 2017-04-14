@@ -1,7 +1,7 @@
 /*
 * The MIT License (MIT)
 *
-* Copyright (c) 2016 vmolsa <ville.molsa@gmail.com> (http://github.com/vmolsa)
+* Copyright (c) 2017 vmolsa <ville.molsa@gmail.com> (http://github.com/vmolsa)
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 
 #include "crtc.h"
 #include "async.h"
+#include "worker.h"
 
 #include "webrtc/base/thread.h"
 #include "webrtc/base/asyncinvoker.h"
@@ -42,26 +43,18 @@ void AsyncInternal::Dispose() {
   delete _async;
 }
 
-void Async::Call(Functor<void()> callback) {
-  Let<AsyncCall> ac = AsyncCall::New(callback);
+void Async::Call(Functor<void()> callback, int delay, Let<Worker> ptr) {
+  Let<Event> event = Event::New();
+  Let<WorkerInternal> worker(ptr);
+  rtc::Thread *target = (!worker.IsEmpty()) ? worker : rtc::Thread::Current();
 
-  _async->AsyncInvoke<void>(RTC_FROM_HERE, rtc::Thread::Current(), [ac]() {
-    ac->Call();
-  });
-}
-
-Let<AsyncCall> AsyncCall::New(Functor<void()> callback) {
-  return Let<AsyncCall>::New(callback);
-}
-
-AsyncCall::AsyncCall(Functor<void()> callback) : _callback(callback) {
-  
-}
-
-AsyncCall::~AsyncCall() {
-  
-}
-
-void AsyncCall::Call() const {
-  _callback();
+  if (delay > 0) {
+    _async->AsyncInvokeDelayed<void>(RTC_FROM_HERE, target, [worker, callback, event]() mutable {
+      callback();
+    }, delay);
+  } else {
+    _async->AsyncInvoke<void>(RTC_FROM_HERE, target, [worker, callback, event]() mutable {
+      callback();
+    });
+  }
 }

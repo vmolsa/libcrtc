@@ -28,5 +28,7 @@
 *.out
 *.app
 
-depot_tools/
-webrtc/
+3dparty/
+out/
+latex/
+dist/

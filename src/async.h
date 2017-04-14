@@ -2,7 +2,7 @@
 /*
 * The MIT License (MIT)
 *
-* Copyright (c) 2016 vmolsa <ville.molsa@gmail.com> (http://github.com/vmolsa)
+* Copyright (c) 2017 vmolsa <ville.molsa@gmail.com> (http://github.com/vmolsa)
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -34,21 +34,6 @@ namespace crtc {
     public:
       static void Init();
       static void Dispose();
-  };
-
-  class AsyncCall : public Event {
-      friend class Let<AsyncCall>;
-
-    public:
-      static Let<AsyncCall> New(Functor<void()> callback);
-
-      void Call() const;
-    private: 
-      explicit AsyncCall(Functor<void()> callback);
-      ~AsyncCall() override;
-
-    protected:
-      Functor<void()> _callback;
   };
 };
 

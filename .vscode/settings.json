@@ -1,0 +1,18 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+  "files.exclude": {
+    "**/3dparty": true,
+    "**/out": true,
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true
+  },
+  "search.exclude": {
+    "**/3dparty": true,
+    "**/out": true,
+    "**/node_modules": true,
+    "**/bower_components": true
+  }
+}
