@@ -25,7 +25,7 @@
 
 #include "crtc.h"
 #include "videosink.h"
-#include "i420p.h"
+#include "imagebuffer.h"
 
 using namespace crtc;
 
@@ -103,8 +103,6 @@ void VideoSinkInternal::Stop() {
     _video_track->RemoveSink(this);
     _event.Dispose();
   }
-
-  ondata.Dispose();
 }
 
 void VideoSinkInternal::OnEnded() {

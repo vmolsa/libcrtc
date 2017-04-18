@@ -23,8 +23,8 @@
 *
 */
 
-#ifndef CRTC_I420P_H
-#define CRTC_I420P_H
+#ifndef CRTC_IMAGEBUFFER_H
+#define CRTC_IMAGEBUFFER_H
 
 #include "crtc.h"
 #include "arraybuffer.h"
@@ -33,12 +33,12 @@
 #include "webrtc/common_video/include/video_frame_buffer.h"
 
 namespace crtc {
-  class I420PInternal : public I420P, public ArrayBufferInternal {
-      friend class Let<I420PInternal>;
+  class ImageBufferInternal : public ImageBuffer, public ArrayBufferInternal {
+      friend class Let<ImageBufferInternal>;
 
     public:
-      static Let<I420P> New(const Let<ArrayBuffer> &buffer, int width, int height);
-      static Let<I420P> New(int width = 0, int height = 0);
+      static Let<ImageBuffer> New(const Let<ArrayBuffer> &buffer, int width, int height);
+      static Let<ImageBuffer> New(int width = 0, int height = 0);
 
       int Width() const override;
       int Height() const override;
@@ -61,9 +61,9 @@ namespace crtc {
       std::string ToString() const override;
 
     protected:
-      explicit I420PInternal(const Let<ArrayBuffer> &buffer, int width, int height);
-      I420PInternal(int width = 0, int height = 0);
-      ~I420PInternal() override;
+      explicit ImageBufferInternal(const Let<ArrayBuffer> &buffer, int width, int height);
+      ImageBufferInternal(int width = 0, int height = 0);
+      ~ImageBufferInternal() override;
 
       int _width;
       int _height;
@@ -73,9 +73,9 @@ namespace crtc {
       const uint8_t* _v;
   };
 
-  class WrapI420P : public webrtc::VideoFrameBuffer {
+  class WrapImageBuffer : public webrtc::VideoFrameBuffer {
     public:
-      static rtc::scoped_refptr<webrtc::VideoFrameBuffer> New(const Let<I420P> &source);
+      static rtc::scoped_refptr<webrtc::VideoFrameBuffer> New(const Let<ImageBuffer> &source);
 
       int width() const override;
       int height() const override;
@@ -92,17 +92,17 @@ namespace crtc {
       rtc::scoped_refptr<webrtc::VideoFrameBuffer> NativeToI420Buffer() override;
 
     protected:
-      explicit WrapI420P(const Let<I420P> &source);
-      ~WrapI420P() override;
+      explicit WrapImageBuffer(const Let<ImageBuffer> &source);
+      ~WrapImageBuffer() override;
 
-      Let<I420P> _source;
+      Let<ImageBuffer> _source;
   };
 
-  class WrapVideoFrameBuffer : public I420P {
+  class WrapVideoFrameBuffer : public ImageBuffer {
       friend class Let<WrapVideoFrameBuffer>;
 
     public:
-      static Let<I420P> New(const rtc::scoped_refptr<webrtc::VideoFrameBuffer> &vfb);
+      static Let<ImageBuffer> New(const rtc::scoped_refptr<webrtc::VideoFrameBuffer> &vfb);
 
       int Width() const override;
       int Height() const override;

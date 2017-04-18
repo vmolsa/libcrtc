@@ -15,7 +15,7 @@ void ReadFrame(const Let<VideoSource> &source, const Let<ArrayBuffer> &buffer) {
     size_t bytes = fread(buffer->Data(), 1, buffer->ByteLength(), stdin);
 
     if (bytes == buffer->ByteLength()) {
-      source->Write(I420P::New(buffer, 1280, 720), [=](const Let<Error> &error) {
+      source->Write(ImageBuffer::New(buffer, 1280, 720), [=](const Let<Error> &error) {
         if (!error.IsEmpty()) {
           fprintf(stderr, "VideoSource::Write(%s)\n", error->ToString().c_str());
         } else {
@@ -39,16 +39,18 @@ int main() {
   for (const auto &track: source->GetVideoTracks()) {
     fprintf(stderr, "MediaStreamTrack: %s\n", track->Id().c_str());
 
-    Let<MediaStreamTrack> mtrack = track->Clone();
-    mtrack->onended = [mtrack]() {
-      fprintf(stderr, "MediaStreamTrack: %s Ended!\n", mtrack->Id().c_str());
-    };
-
     Let<VideoSink> sink = VideoSink::New(track);
+    Let<MediaStreamTrack> mtrack = track->Clone();
 
-    sink->ondata = [sink](const Let<I420P> &frame) {
+    sink->ondata = [=](const Let<ImageBuffer> &frame) {
       Let<ArrayBuffer> buffer(frame);
       fwrite(frame->Data(), 1, buffer->ByteLength(), stdout);
+    };
+
+    mtrack->onended = [=]() {
+      fprintf(stderr, "MediaStreamTrack: %s Ended!\n", mtrack->Id().c_str());
+      sink->ondata.Dispose();
+      mtrack->onended.Dispose();
     };
   }
   

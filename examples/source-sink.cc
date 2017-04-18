@@ -23,16 +23,19 @@ int main() {
     for (const auto &track: source->GetVideoTracks()) {
       printf("MediaStreamTrack: %s\n", track->Id().c_str());
 
-      Let<MediaStreamTrack> mtrack = track->Clone();
-      mtrack->onended = [mtrack]() {
-        printf("MediaStreamTrack: %s Ended!\n", mtrack->Id().c_str());
-      };
-
       Let<VideoSink> sink = VideoSink::New(track);
-
+      Let<MediaStreamTrack> mtrack = track->Clone();
+      
       int64_t begin = Time::Now();
 
-      sink->ondata = [sink, begin](const Let<I420P> &frame) {
+      mtrack->onended = [=]() {
+        printf("MediaStreamTrack: %s Ended!\n", mtrack->Id().c_str());
+
+        sink->ondata.Dispose();
+        mtrack->onended.Dispose();
+      };
+
+      sink->ondata = [=](const Let<ImageBuffer> &frame) {
         Let<ArrayBuffer> buffer(frame);
 
         printf("ArrayBuffer: %lu bytes, image width: %d, image height: %d, +%.2lf seconds\n", buffer->ByteLength(), frame->Width(), frame->Height(), Time::Since(begin));
@@ -41,7 +44,7 @@ int main() {
   }
 
   Worker::New([=]() {
-    Let<I420P> frame = I420P::New(1280, 720);
+    Let<ImageBuffer> frame = ImageBuffer::New(1280, 720);
 
     for (int index = 0; index < (30 * 30); index++) {
       source->Write(frame, &ReportError);
@@ -50,6 +53,7 @@ int main() {
 
   source->ondrain = [=]() {
     source->Stop();
+    source->ondrain.Dispose();
   };
 
   Module::DispatchEvents(true);

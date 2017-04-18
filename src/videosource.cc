@@ -151,7 +151,7 @@ float VideoSourceInternal::Fps() const {
   return 0;
 }
 
-void VideoSourceInternal::Write(const Let<I420P> &i420p_frame, ErrorCallback callback) {
+void VideoSourceInternal::Write(const Let<ImageBuffer> &i420p_frame, ErrorCallback callback) {
   if (_capturer) {
     _capturer->Write(i420p_frame, callback);
   } else {

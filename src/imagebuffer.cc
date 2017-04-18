@@ -24,11 +24,11 @@
 */
 
 #include "crtc.h"
-#include "i420p.h"
+#include "imagebuffer.h"
 
 using namespace crtc;
 
-I420PInternal::I420PInternal(const Let<ArrayBuffer> &buffer, int width, int height) : 
+ImageBufferInternal::ImageBufferInternal(const Let<ArrayBuffer> &buffer, int width, int height) : 
   ArrayBufferInternal(buffer),
   _width(width), 
   _height(height)
@@ -38,8 +38,8 @@ I420PInternal::I420PInternal(const Let<ArrayBuffer> &buffer, int width, int heig
   _v = ArrayBufferInternal::Data() + _width * _height + ((_width + 1) >> 1) * ((_height + 1) >> 1);
 }
 
-I420PInternal::I420PInternal(int width, int height) :
-  ArrayBufferInternal(nullptr, I420P::ByteLength(width, height)),
+ImageBufferInternal::ImageBufferInternal(int width, int height) :
+  ArrayBufferInternal(nullptr, ImageBuffer::ByteLength(width, height)),
   _width(width), 
   _height(height) 
 {
@@ -48,87 +48,87 @@ I420PInternal::I420PInternal(int width, int height) :
   _v = ArrayBufferInternal::Data() + _width * _height + ((_width + 1) >> 1) * ((_height + 1) >> 1);
 }
 
-I420PInternal::~I420PInternal() {
+ImageBufferInternal::~ImageBufferInternal() {
   
 }
 
-Let<I420P> I420PInternal::New(const Let<ArrayBuffer> &buffer, int width, int height) {
-  return Let<I420PInternal>::New(buffer, width, height);
+Let<ImageBuffer> ImageBufferInternal::New(const Let<ArrayBuffer> &buffer, int width, int height) {
+  return Let<ImageBufferInternal>::New(buffer, width, height);
 }
 
-Let<I420P> I420PInternal::New(int width, int height) {
-  return Let<I420PInternal>::New(width, height);
+Let<ImageBuffer> ImageBufferInternal::New(int width, int height) {
+  return Let<ImageBufferInternal>::New(width, height);
 }
 
-int I420PInternal::Width() const {
+int ImageBufferInternal::Width() const {
   return _width;
 }
 
-int I420PInternal::Height() const {
+int ImageBufferInternal::Height() const {
   return _height;
 }
 
-const uint8_t* I420PInternal::DataY() const {
+const uint8_t* ImageBufferInternal::DataY() const {
   return _y;
 }
 
-const uint8_t* I420PInternal::DataU() const {
+const uint8_t* ImageBufferInternal::DataU() const {
   return _u;
 }
 
-const uint8_t* I420PInternal::DataV() const {
+const uint8_t* ImageBufferInternal::DataV() const {
   return _v;
 }
 
-int I420PInternal::StrideY() const {
+int ImageBufferInternal::StrideY() const {
   return _width;
 }
 
-int I420PInternal::StrideU() const {
+int ImageBufferInternal::StrideU() const {
   return (_width + 1) >> 1;
 }
 
-int I420PInternal::StrideV() const {
+int ImageBufferInternal::StrideV() const {
   return (_width + 1) >> 1;
 }
 
-size_t I420PInternal::ByteLength() const {
+size_t ImageBufferInternal::ByteLength() const {
   return ArrayBufferInternal::ByteLength();
 }
 
-Let<ArrayBuffer> I420PInternal::Slice(size_t begin, size_t end) const {
+Let<ArrayBuffer> ImageBufferInternal::Slice(size_t begin, size_t end) const {
   return ArrayBufferInternal::Slice(begin, end);
 }
 
-uint8_t *I420PInternal::Data() {
+uint8_t *ImageBufferInternal::Data() {
   return ArrayBufferInternal::Data();
 }
 
-const uint8_t *I420PInternal::Data() const {
+const uint8_t *ImageBufferInternal::Data() const {
   return ArrayBufferInternal::Data();
 }
 
-std::string I420PInternal::ToString() const {
+std::string ImageBufferInternal::ToString() const {
   return ArrayBufferInternal::ToString();
 }
 
-Let<I420P> I420P::New(int width, int height) {
-  return I420PInternal::New(width, height);
+Let<ImageBuffer> ImageBuffer::New(int width, int height) {
+  return ImageBufferInternal::New(width, height);
 }
 
-Let<I420P> I420P::New(const Let<ArrayBuffer> &buffer, int width, int height) {
-  if (I420P::ByteLength(width, height) == buffer->ByteLength()) {
-    return I420PInternal::New(buffer, width, height);
+Let<ImageBuffer> ImageBuffer::New(const Let<ArrayBuffer> &buffer, int width, int height) {
+  if (ImageBuffer::ByteLength(width, height) == buffer->ByteLength()) {
+    return ImageBufferInternal::New(buffer, width, height);
   }
   
-  return Let<I420P>::Empty();
+  return Let<ImageBuffer>::Empty();
 }
 
-size_t I420P::ByteLength(int height, int stride_y, int stride_u, int stride_v) {
+size_t ImageBuffer::ByteLength(int height, int stride_y, int stride_u, int stride_v) {
   return static_cast<size_t>(stride_y * height + (stride_u + stride_v) * ((height + 1) >> 1));
 }
 
-size_t I420P::ByteLength(int width, int height) {
+size_t ImageBuffer::ByteLength(int width, int height) {
   if (width > 0 && height > 0) {
     return ByteLength(height, width, (width + 1) >> 1, (width + 1) >> 1);
   }
@@ -136,68 +136,68 @@ size_t I420P::ByteLength(int width, int height) {
   return 0; 
 }
 
-rtc::scoped_refptr<webrtc::VideoFrameBuffer> WrapI420P::New(const Let<I420P> &source) {
+rtc::scoped_refptr<webrtc::VideoFrameBuffer> WrapImageBuffer::New(const Let<ImageBuffer> &source) {
   if (!source.IsEmpty()) {
-    return new rtc::RefCountedObject<WrapI420P>(source);
+    return new rtc::RefCountedObject<WrapImageBuffer>(source);
   }
 
   return nullptr;
 }
 
-WrapI420P::WrapI420P(const Let<I420P> &source) :
+WrapImageBuffer::WrapImageBuffer(const Let<ImageBuffer> &source) :
   _source(source)
 { }
 
-WrapI420P::~WrapI420P() {
+WrapImageBuffer::~WrapImageBuffer() {
 
 }
 
-int WrapI420P::width() const {
+int WrapImageBuffer::width() const {
   return _source->Width();
 }
 
-int WrapI420P::height() const {
+int WrapImageBuffer::height() const {
   return _source->Height();
 }
 
-const uint8_t* WrapI420P::DataY() const {
+const uint8_t* WrapImageBuffer::DataY() const {
   return _source->DataY();
 }
 
-const uint8_t* WrapI420P::DataU() const {
+const uint8_t* WrapImageBuffer::DataU() const {
   return _source->DataU();
 }
 
-const uint8_t* WrapI420P::DataV() const {
+const uint8_t* WrapImageBuffer::DataV() const {
   return _source->DataV();
 }
 
-int WrapI420P::StrideY() const {
+int WrapImageBuffer::StrideY() const {
   return _source->StrideY();
 }
 
-int WrapI420P::StrideU() const {
+int WrapImageBuffer::StrideU() const {
   return _source->StrideU();
 }
 
-int WrapI420P::StrideV() const {
+int WrapImageBuffer::StrideV() const {
   return _source->StrideV();
 }
 
-void* WrapI420P::native_handle() const {
+void* WrapImageBuffer::native_handle() const {
   return nullptr;
 }
 
-rtc::scoped_refptr<webrtc::VideoFrameBuffer> WrapI420P::NativeToI420Buffer() {
+rtc::scoped_refptr<webrtc::VideoFrameBuffer> WrapImageBuffer::NativeToI420Buffer() {
   return nullptr;
 }
 
-Let<I420P> WrapVideoFrameBuffer::New(const rtc::scoped_refptr<webrtc::VideoFrameBuffer> &vfb) {
+Let<ImageBuffer> WrapVideoFrameBuffer::New(const rtc::scoped_refptr<webrtc::VideoFrameBuffer> &vfb) {
   if (vfb.get()) {
     return Let<WrapVideoFrameBuffer>::New(vfb);
   }
 
-  return Let<I420P>::Empty();
+  return Let<ImageBuffer>::Empty();
 }
 
 WrapVideoFrameBuffer::WrapVideoFrameBuffer(const rtc::scoped_refptr<webrtc::VideoFrameBuffer> &vfb) :
@@ -241,7 +241,7 @@ int WrapVideoFrameBuffer::StrideV() const {
 }
 
 size_t WrapVideoFrameBuffer::ByteLength() const {
-  return I420P::ByteLength(_vfb->height(), _vfb->StrideY(), _vfb->StrideU(), _vfb->StrideV());
+  return ImageBuffer::ByteLength(_vfb->height(), _vfb->StrideY(), _vfb->StrideU(), _vfb->StrideV());
 }
 
 Let<ArrayBuffer> WrapVideoFrameBuffer::Slice(size_t begin, size_t end) const {

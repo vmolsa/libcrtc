@@ -31,7 +31,7 @@
 #include "mediastream.h"
 #include "mediastreamtrack.h"
 #include "worker.h"
-#include "i420p.h"
+#include "imagebuffer.h"
 #include "videocapturer.h"
 
 #include "webrtc/api/peerconnectioninterface.h"
@@ -59,7 +59,7 @@ namespace crtc {
       int Width() const override;
       int Height() const override;
       float Fps() const override;
-      void Write(const Let<I420P> &frame, ErrorCallback callback = ErrorCallback()) override;
+      void Write(const Let<ImageBuffer> &frame, ErrorCallback callback = ErrorCallback()) override;
 
     private:
       void OnStateChange(cricket::VideoCapturer* capturer, cricket::CaptureState capture_state);

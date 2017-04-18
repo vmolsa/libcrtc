@@ -25,7 +25,7 @@ component("crtc") {
     "src/audiosink.cc",
     "src/videosource.cc",
     "src/videosink.cc",
-    "src/i420p.cc",
+    "src/imagebuffer.cc",
     "src/time.cc",
     "src/audiobuffer.cc",
     "src/audiosource.cc",
