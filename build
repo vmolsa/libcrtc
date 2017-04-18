@@ -6,16 +6,20 @@ import subprocess
 import shutil
 import tarfile
 
-def build_archive(dst, src):
-  with tarfile.open(dst, "w:gz") as tar:
-    tar.add(src, arcname=os.path.basename(src))
-
 root_dir = os.path.dirname(os.path.realpath(__file__))
 dist_dir = os.path.join(root_dir, 'dist')
 dist_include_dir = os.path.join(dist_dir, 'include')
 dist_lib_dir = os.path.join(dist_dir, 'lib')
 out_dir = os.path.join(root_dir, 'out')
 third_party_dir = os.path.join(root_dir, '3dparty')
+
+release_name = '1.0.0-beta'
+pkg_name = 'libcrtc-' + release_name + '-' + sys.platform + '.tar.gz'
+
+def build_archive():
+  with tarfile.open(os.path.join(dist_dir, pkg_name), "w:gz") as tar:
+    tar.add(dist_include_dir, arcname='include')
+    tar.add(dist_lib_dir, arcname='lib')
 
 depot_tools_dir = os.path.join(third_party_dir, 'depot_tools')
 webrtc_dir = os.path.join(third_party_dir, 'webrtc')
@@ -100,7 +104,7 @@ elif sys.platform.startswith('darwin'):
   shutil.copy(os.path.join(out_dir, 'libcrtc.dylib'), dist_lib_dir)
   shutil.copy(os.path.join(out_dir, 'libboringssl.dylib'), dist_lib_dir)
 
-build_archive(os.path.join(root_dir, 'libcrtc.tar.gz'), dist_dir)
+build_archive()
 
 if os.environ.get('BUILD_WEBRTC_TESTS') == 'true':
   subprocess.call(['ninja', '-C', 'out', 'webrtc_tests'])
