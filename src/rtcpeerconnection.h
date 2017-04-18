@@ -262,6 +262,7 @@ namespace crtc {
       rtc::scoped_refptr<webrtc::PeerConnectionInterface> _socket;
       rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> _factory;
       Let<Event> _event;
+      std::vector<Callback> _pending_candidates;
   };
 };
 

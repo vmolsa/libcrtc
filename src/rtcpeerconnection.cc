@@ -124,12 +124,34 @@ Let<Promise<void> > RTCPeerConnectionInternal::AddIceCandidate(const RTCPeerConn
     webrtc::IceCandidateInterface *ice = webrtc::CreateIceCandidate(candidate.sdpMid, candidate.sdpMLineIndex, candidate.candidate, &error);    
 
     if (ice) {
-      if (_socket->AddIceCandidate(ice)) {
-        return resolve();
-      }
-      
-      if (error.description.empty()) {
-        return reject(Error::New("The ICE candidate could not be added", __FILE__, __LINE__));
+      if (!_socket->pending_remote_description() && !_socket->current_remote_description()) {
+        _pending_candidates.push_back(Callback([=]() {
+          if (_socket->AddIceCandidate(ice)) {
+            return resolve();
+          }
+        
+          if (error.description.empty()) {
+            if (!_socket->pending_remote_description() && !_socket->current_remote_description()) {
+              return reject(Error::New("ICE candidates can't be added without any remote session description.", __FILE__, __LINE__));
+            }
+
+            return reject(Error::New("Candidate cannot be used.", __FILE__, __LINE__));
+          }
+        }, [=]() {
+          reject(Error::New("Candidate cannot be used.", __FILE__, __LINE__));
+        }));
+      } else {
+        if (_socket->AddIceCandidate(ice)) {
+          return resolve();
+        }
+        
+        if (error.description.empty()) {
+          if (!_socket->pending_remote_description() && !_socket->current_remote_description()) {
+            return reject(Error::New("ICE candidates can't be added without any remote session description.", __FILE__, __LINE__));
+          }
+
+          return reject(Error::New("Candidate cannot be used.", __FILE__, __LINE__));
+        }
       }
     }
 
@@ -290,8 +312,23 @@ Let<Promise<void> > RTCPeerConnectionInternal::SetRemoteDescription(const RTCPee
     Let<Error> error = SDP2SDP(sdp, &desc);
 
     if (error.IsEmpty()) {
-      rtc::scoped_refptr<SetSessionDescriptionObserver> observer = new rtc::RefCountedObject<SetSessionDescriptionObserver>(resolve, reject);
-      _socket->SetRemoteDescription(observer.get(), desc);
+      auto promise = Promise<void>::New([=](const Promise<void>::FullFilledCallback &res, const Promise<void>::RejectedCallback &rej) {
+        rtc::scoped_refptr<SetSessionDescriptionObserver> observer = new rtc::RefCountedObject<SetSessionDescriptionObserver>(res, rej);
+        _socket->SetRemoteDescription(observer.get(), desc);
+      })->Then([=]() {
+        if (_pending_candidates.size()) {
+          for (const auto& callback : _pending_candidates) {
+            callback();
+          }
+
+          _pending_candidates.clear();
+        }
+
+        resolve();
+      })->Catch([=](const Let<Error> &error) {
+        reject(error);
+      });
+
     } else {
       reject(error);
     }
@@ -400,16 +437,6 @@ void RTCPeerConnectionInternal::OnSignalingChange(webrtc::PeerConnectionInterfac
 
   if (new_state == webrtc::PeerConnectionInterface::kClosed) {
     _event.Dispose();
-    //ontrack.Dispose();
-    onnegotiationneeded.Dispose();
-    onsignalingstatechange.Dispose();
-    onicegatheringstatechange.Dispose();
-    oniceconnectionstatechange.Dispose();
-    onicecandidatesremoved.Dispose();
-    onaddstream.Dispose();
-    onremovestream.Dispose();
-    ondatachannel.Dispose();
-    onicecandidate.Dispose();
   } else if (_event.IsEmpty()) {
     _event = Event::New();
   }
@@ -461,7 +488,7 @@ void RTCPeerConnectionInternal::OnIceCandidatesRemoved(const std::vector<cricket
 }
 
 void RTCPeerConnectionInternal::OnIceConnectionReceivingChange(bool receiving) {
-  oniceconnectionstatechange();
+  //oniceconnectionstatechange();
 }
 
 // DEPRECATED -> //
