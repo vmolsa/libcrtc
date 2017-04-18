@@ -87,6 +87,7 @@ RealTimeClockInternal::RealTimeClockInternal(const Callback &runnable) :
 bool RealTimeClockInternal::Run(void* obj) {
   Let<RealTimeClockInternal> clock(static_cast<RealTimeClockInternal*>(obj));
  
+  clock->_signal = rtc::CurrentThreadId();
   clock->_runnable();
   clock->_tick->Wait(WEBRTC_EVENT_INFINITE);
   
@@ -94,13 +95,11 @@ bool RealTimeClockInternal::Run(void* obj) {
 }
 
 RealTimeClockInternal::~RealTimeClockInternal() {
-  _thread.Stop();
+  Stop();
 }
 
 void RealTimeClockInternal::Start(uint32_t interval_ms) {
-  rtc::CritScope cs(&_lock);
-
-  if (!_thread.IsRunning()) {
+  if (rtc::CurrentThreadId() != _signal && !_thread.IsRunning()) {
     _tick->StartTimer(true, interval_ms);
     _thread.Start();
     _thread.SetPriority(rtc::kHighPriority);
@@ -108,10 +107,8 @@ void RealTimeClockInternal::Start(uint32_t interval_ms) {
 }
 
 void RealTimeClockInternal::Stop() {
-  rtc::CritScope cs(&_lock);
-
-  if (_thread.IsRunning()) {
-    //_thread.Stop();
+  if (rtc::CurrentThreadId() != _signal && _thread.IsRunning()) {
+    _thread.Stop();
   }
 }
 

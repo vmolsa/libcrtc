@@ -63,9 +63,9 @@ namespace crtc {
       explicit RealTimeClockInternal(const Callback &runnable);
       ~RealTimeClockInternal() override;
 
-      rtc::CriticalSection _lock;
       std::unique_ptr<webrtc::EventTimerWrapper> _tick;
       rtc::PlatformThread _thread;
+      rtc::PlatformThreadId _signal;
 
       Callback _runnable;
       
