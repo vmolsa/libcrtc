@@ -4,6 +4,11 @@ import os
 import sys
 import subprocess
 import shutil
+import tarfile
+
+def build_archive(dst, src):
+  with tarfile.open(dst, "w:gz") as tar:
+    tar.add(src, arcname=os.path.basename(src))
 
 root_dir = os.path.dirname(os.path.realpath(__file__))
 dist_dir = os.path.join(root_dir, 'dist')
@@ -94,6 +99,8 @@ elif sys.platform.startswith('win32'):
 elif sys.platform.startswith('darwin'):
   shutil.copy(os.path.join(out_dir, 'libcrtc.dylib'), dist_lib_dir)
   shutil.copy(os.path.join(out_dir, 'libboringssl.dylib'), dist_lib_dir)
+
+build_archive(os.path.join(root_dir, 'libcrtc.tar.gz'), dist_dir)
 
 if os.environ.get('BUILD_WEBRTC_TESTS') == 'true':
   subprocess.call(['ninja', '-C', 'out', 'webrtc_tests'])
