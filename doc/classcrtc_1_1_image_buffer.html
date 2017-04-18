@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.12"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>libcrtc: crtc::AudioBuffer Class Reference</title>
+<title>libcrtc: crtc::ImageBuffer Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -58,24 +58,24 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>crtc</b></li><li class="navelem"><a class="el" href="classcrtc_1_1_audio_buffer.html">AudioBuffer</a></li>  </ul>
+<li class="navelem"><b>crtc</b></li><li class="navelem"><a class="el" href="classcrtc_1_1_image_buffer.html">ImageBuffer</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
-<a href="classcrtc_1_1_audio_buffer-members.html">List of all members</a>  </div>
+<a href="classcrtc_1_1_image_buffer-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">crtc::AudioBuffer Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
+<div class="title">crtc::ImageBuffer Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="dynheader">
-Inheritance diagram for crtc::AudioBuffer:</div>
+Inheritance diagram for crtc::ImageBuffer:</div>
 <div class="dyncontent">
  <div class="center">
-  <img src="classcrtc_1_1_audio_buffer.png" usemap="#crtc::AudioBuffer_map" alt=""/>
-  <map id="crtc::AudioBuffer_map" name="crtc::AudioBuffer_map">
+  <img src="classcrtc_1_1_image_buffer.png" usemap="#crtc::ImageBuffer_map" alt=""/>
+  <map id="crtc::ImageBuffer_map" name="crtc::ImageBuffer_map">
 <area href="classcrtc_1_1_array_buffer.html" alt="crtc::ArrayBuffer" shape="rect" coords="0,56,108,80"/>
 <area href="classcrtc_1_1_reference.html" alt="crtc::Reference" shape="rect" coords="0,0,108,24"/>
 </map>
@@ -83,15 +83,30 @@ Inheritance diagram for crtc::AudioBuffer:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a3c80aa60bc1af08e8138a8730ad3f3fa"><td class="memItemLeft" align="right" valign="top"><a id="a3c80aa60bc1af08e8138a8730ad3f3fa"></a>
-virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>Channels</b> () const =0</td></tr>
-<tr class="separator:a3c80aa60bc1af08e8138a8730ad3f3fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a437e8bdf6dfa91c67ccc54bf17db6814"><td class="memItemLeft" align="right" valign="top"><a id="a437e8bdf6dfa91c67ccc54bf17db6814"></a>
-virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>SampleRate</b> () const =0</td></tr>
-<tr class="separator:a437e8bdf6dfa91c67ccc54bf17db6814"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc5caf467885ab7394f33ceac2d66a8c"><td class="memItemLeft" align="right" valign="top"><a id="acc5caf467885ab7394f33ceac2d66a8c"></a>
-virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>BitsPerSample</b> () const =0</td></tr>
-<tr class="separator:acc5caf467885ab7394f33ceac2d66a8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a466d2b6c5a46f1be6cd56fa72d88e0f6"><td class="memItemLeft" align="right" valign="top"><a id="a466d2b6c5a46f1be6cd56fa72d88e0f6"></a>
+virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>Width</b> () const =0</td></tr>
+<tr class="separator:a466d2b6c5a46f1be6cd56fa72d88e0f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ddfb5de0b5d594ddea0668f94d1e5ce"><td class="memItemLeft" align="right" valign="top"><a id="a3ddfb5de0b5d594ddea0668f94d1e5ce"></a>
+virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>Height</b> () const =0</td></tr>
+<tr class="separator:a3ddfb5de0b5d594ddea0668f94d1e5ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad81ddd97b4808cc1f51889185584fa86"><td class="memItemLeft" align="right" valign="top"><a id="ad81ddd97b4808cc1f51889185584fa86"></a>
+virtual const uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><b>DataY</b> () const =0</td></tr>
+<tr class="separator:ad81ddd97b4808cc1f51889185584fa86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf784109d6d664c4386e50f0a658ea29"><td class="memItemLeft" align="right" valign="top"><a id="abf784109d6d664c4386e50f0a658ea29"></a>
+virtual const uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><b>DataU</b> () const =0</td></tr>
+<tr class="separator:abf784109d6d664c4386e50f0a658ea29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a155baf8c858bd001eceb8c57587a43d8"><td class="memItemLeft" align="right" valign="top"><a id="a155baf8c858bd001eceb8c57587a43d8"></a>
+virtual const uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><b>DataV</b> () const =0</td></tr>
+<tr class="separator:a155baf8c858bd001eceb8c57587a43d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93c79a5628e6a511dc2ff353da64fa36"><td class="memItemLeft" align="right" valign="top"><a id="a93c79a5628e6a511dc2ff353da64fa36"></a>
+virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>StrideY</b> () const =0</td></tr>
+<tr class="separator:a93c79a5628e6a511dc2ff353da64fa36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb9ecf0a4435b31c52101d0e349d305a"><td class="memItemLeft" align="right" valign="top"><a id="afb9ecf0a4435b31c52101d0e349d305a"></a>
+virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>StrideU</b> () const =0</td></tr>
+<tr class="separator:afb9ecf0a4435b31c52101d0e349d305a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d0198cdb1e7f35a91053d6b269b0fdd"><td class="memItemLeft" align="right" valign="top"><a id="a4d0198cdb1e7f35a91053d6b269b0fdd"></a>
+virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>StrideV</b> () const =0</td></tr>
+<tr class="separator:a4d0198cdb1e7f35a91053d6b269b0fdd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classcrtc_1_1_array_buffer"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classcrtc_1_1_array_buffer')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classcrtc_1_1_array_buffer.html">crtc::ArrayBuffer</a></td></tr>
 <tr class="memitem:a583b796ade95f3d75754153095d8df72 inherit pub_methods_classcrtc_1_1_array_buffer"><td class="memItemLeft" align="right" valign="top"><a id="a583b796ade95f3d75754153095d8df72"></a>
 virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ByteLength</b> () const =0</td></tr>
@@ -111,12 +126,18 @@ virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><b>ToStri
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:ac6088be73a36044d0e0dbb5ffdae1a19"><td class="memItemLeft" align="right" valign="top"><a id="ac6088be73a36044d0e0dbb5ffdae1a19"></a>
-static <a class="el" href="classcrtc_1_1_let.html">Let</a>&lt; <a class="el" href="classcrtc_1_1_audio_buffer.html">AudioBuffer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>New</b> (int channels=2, int sampleRate=44100, int bitsPerSample=8)</td></tr>
-<tr class="separator:ac6088be73a36044d0e0dbb5ffdae1a19"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2216fcf20ac66949b5ed37bf4edb3189"><td class="memItemLeft" align="right" valign="top"><a id="a2216fcf20ac66949b5ed37bf4edb3189"></a>
-static <a class="el" href="classcrtc_1_1_let.html">Let</a>&lt; <a class="el" href="classcrtc_1_1_audio_buffer.html">AudioBuffer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>New</b> (const <a class="el" href="classcrtc_1_1_let.html">Let</a>&lt; <a class="el" href="classcrtc_1_1_array_buffer.html">ArrayBuffer</a> &gt; &amp;buffer, int channels=2, int sampleRate=44100, int bitsPerSample=8)</td></tr>
-<tr class="separator:a2216fcf20ac66949b5ed37bf4edb3189"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af976a320389b538f4edafdb6ac4d0a22"><td class="memItemLeft" align="right" valign="top"><a id="af976a320389b538f4edafdb6ac4d0a22"></a>
+static <a class="el" href="classcrtc_1_1_let.html">Let</a>&lt; <a class="el" href="classcrtc_1_1_image_buffer.html">ImageBuffer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>New</b> (int width, int height)</td></tr>
+<tr class="separator:af976a320389b538f4edafdb6ac4d0a22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac26c47743a4c450bae7073d9a248d2fd"><td class="memItemLeft" align="right" valign="top"><a id="ac26c47743a4c450bae7073d9a248d2fd"></a>
+static <a class="el" href="classcrtc_1_1_let.html">Let</a>&lt; <a class="el" href="classcrtc_1_1_image_buffer.html">ImageBuffer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>New</b> (const <a class="el" href="classcrtc_1_1_let.html">Let</a>&lt; <a class="el" href="classcrtc_1_1_array_buffer.html">ArrayBuffer</a> &gt; &amp;buffer, int width, int height)</td></tr>
+<tr class="separator:ac26c47743a4c450bae7073d9a248d2fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19a435e8b81cd95a5463f27e82767439"><td class="memItemLeft" align="right" valign="top"><a id="a19a435e8b81cd95a5463f27e82767439"></a>
+static size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ByteLength</b> (int height, int stride_y, int stride_u, int stride_v)</td></tr>
+<tr class="separator:a19a435e8b81cd95a5463f27e82767439"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9081c3830df76f2ec242ae0826d6fc5"><td class="memItemLeft" align="right" valign="top"><a id="ad9081c3830df76f2ec242ae0826d6fc5"></a>
+static size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ByteLength</b> (int width, int height)</td></tr>
+<tr class="separator:ad9081c3830df76f2ec242ae0826d6fc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_static_methods_classcrtc_1_1_array_buffer"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classcrtc_1_1_array_buffer')"><img src="closed.png" alt="-"/>&#160;Static Public Member Functions inherited from <a class="el" href="classcrtc_1_1_array_buffer.html">crtc::ArrayBuffer</a></td></tr>
 <tr class="memitem:ae9d5681fdfc25bcdea90827470810a7d inherit pub_static_methods_classcrtc_1_1_array_buffer"><td class="memItemLeft" align="right" valign="top"><a id="ae9d5681fdfc25bcdea90827470810a7d"></a>
 static <a class="el" href="classcrtc_1_1_let.html">Let</a>&lt; <a class="el" href="classcrtc_1_1_array_buffer.html">ArrayBuffer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>New</b> (size_t byteLength=0)</td></tr>
