@@ -43,9 +43,18 @@ namespace crtc {
       const uint8_t *Data() const override;
 
       std::string ToString() const override;
+
+      int Channels() const override;
+      int SampleRate() const override;
+      int BitsPerSample() const override;
+
     protected:
-      explicit AudioBufferInternal();
+      explicit AudioBufferInternal(const Let<ArrayBuffer> &buffer, int channels, int sampleRate, int bitsPerSample);
       ~AudioBufferInternal() override;
+
+      int _channels;
+      int _samplerate;
+      int _bitspersample;
   };
 };
 

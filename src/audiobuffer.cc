@@ -29,12 +29,15 @@
 
 using namespace crtc;
 
-AudioBufferInternal::AudioBufferInternal() {
-
-}
+AudioBufferInternal::AudioBufferInternal(const Let<ArrayBuffer> &buffer, int channels, int sampleRate, int bitsPerSample) :
+  ArrayBufferInternal(buffer),
+  _channels(channels),
+  _samplerate(sampleRate),
+  _bitspersample(bitsPerSample)
+{ }
 
 AudioBufferInternal::~AudioBufferInternal() {
-
+  
 }
 
 size_t AudioBufferInternal::ByteLength() const {
@@ -56,3 +59,24 @@ const uint8_t *AudioBufferInternal::Data() const {
 std::string AudioBufferInternal::ToString() const {
   return ArrayBufferInternal::ToString();
 }
+
+int AudioBufferInternal::Channels() const {
+  return _channels;
+}
+
+int AudioBufferInternal::SampleRate() const {
+  return _samplerate;
+}
+
+int AudioBufferInternal::BitsPerSample() const {
+  return _bitspersample;
+}
+
+Let<AudioBuffer> AudioBuffer::New(int channels, int sampleRate, int bitsPerSample) {
+  return Let<AudioBufferInternal>::New(ArrayBuffer::New(sampleRate / 100), channels, sampleRate, bitsPerSample);
+}
+
+Let<AudioBuffer> AudioBuffer::New(const Let<ArrayBuffer> &buffer, int channels, int sampleRate, int bitsPerSample) {
+  return Let<AudioBufferInternal>::New(buffer, channels, sampleRate, bitsPerSample);
+}
+
