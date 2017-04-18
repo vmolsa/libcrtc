@@ -56,7 +56,7 @@ void Module::Init() {
 
   rtc::ThreadManager::Instance()->WrapCurrentThread();
   //webrtc::Trace::CreateTrace();
-  //rtc::LogMessage::LogToDebug(rtc::LS_WARNING);
+  //rtc::LogMessage::LogToDebug(rtc::LS_ERROR);
 
   rtc::InitializeSSL();
 
