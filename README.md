@@ -9,3 +9,12 @@ WebRTC uses Real-Time Protocol to transfer audio and video.
 
 **See also**
  - https://webrtc.org/
+
+## API Documentation
+
+[libcrtc](https://rawgit.com/vmolsa/libcrtc/master/doc/index.html)
+
+## Licence & copyright
+
+libcrtc is licensed under an MIT license.
+libcrtc has built on top of webrtc. [for more webrtc license](https://webrtc.org/license/software/)
