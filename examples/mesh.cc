@@ -18,7 +18,26 @@ int send_ping = 0;
 int recv_ping = 0;
 int send_pong = 0;
 int recv_pong = 0;
-int messages = 0;
+int messages_in = 0;
+int messages_out = 0;
+
+void RemovePeerEvents(const Let<RTCPeerConnection> &peer) {
+  peer->onsignalingstatechange.Dispose();
+  peer->onicegatheringstatechange.Dispose();
+  peer->oniceconnectionstatechange.Dispose();
+  peer->onicecandidatesremoved.Dispose();
+  peer->onaddstream.Dispose();
+  peer->onremovestream.Dispose();
+  peer->ondatachannel.Dispose();
+  peer->onicecandidate.Dispose();
+}
+
+void RemoveChannelEvents(const Let<RTCDataChannel> &dc) {
+  dc->onopen.Dispose();
+  dc->onclose.Dispose();
+  dc->onerror.Dispose();
+  dc->onmessage.Dispose();
+}
 
 void makePair(const std::string &left, const std::string &right,
               const Let<RTCPeerConnection> &ls, const Let<RTCPeerConnection> &rs) 
@@ -72,6 +91,11 @@ void makePair(const std::string &left, const std::string &right,
         break;
       case RTCPeerConnection::kSignalingClosed:
         closed_peers++;
+
+        SetImmediate([=]() {
+          RemovePeerEvents(ls);
+        });
+
         std::cout << left << " <-> " << right << " [OnSignalingStateChange]: closed" << std::endl;
         break;
     }
@@ -131,16 +155,21 @@ void makePair(const std::string &left, const std::string &right,
 
   ls->ondatachannel = [=](const Let<RTCDataChannel> &dataChannel) {
     dataChannel->onopen = [=]() {
-      dataChannel->onopen.Dispose();
       open_channels++;
       std::cout << left << " ==> " << right << " [DataChannel: " << dataChannel->Id() << ", Label: " << dataChannel->Label() << "]: Opened" << std::endl;
 
-      dataChannel->Send(ArrayBuffer::New("PING"));
-      send_ping++;
+      for (int index = 0; index < 10; index++) {
+        dataChannel->Send(ArrayBuffer::New("PING"));
+        send_ping++;
+        messages_out++;
+      }      
     };
 
     dataChannel->onclose = [=]() {
-      dataChannel->onclose.Dispose();
+      SetImmediate([=]() {
+        RemoveChannelEvents(dataChannel);
+      });
+
       closed_channels++;
       std::cout << left << " ==> " << right << " [DataChannel: " << dataChannel->Id() << ", Label: " << dataChannel->Label() << "]: Closed" << std::endl;
     };
@@ -151,13 +180,14 @@ void makePair(const std::string &left, const std::string &right,
 
     dataChannel->onmessage = [=](const Let<ArrayBuffer> &buffer, bool binary) {
       std::cout << left << " ==> " << right << " [DataChannel: " << dataChannel->Id() << ", Label: " << dataChannel->Label() << "]: Message" << std::endl;
-      messages++;
+      messages_in++;
 
       if (!buffer->ToString().compare("PING")) {
         recv_ping++;
         std::cout << left << " ==> " << right << " [DataChannel: " << dataChannel->Id() << ", Label: " << dataChannel->Label() << "]: PING" << std::endl;
         dataChannel->Send(ArrayBuffer::New("PONG"));
         send_pong++;
+        messages_out++;
       } else if (!buffer->ToString().compare("PONG")) {
         recv_pong++;
         std::cout << left << " ==> " << right << " [DataChannel: " << dataChannel->Id() << ", Label: " << dataChannel->Label() << "]: PONG" << std::endl;
@@ -204,7 +234,9 @@ void CreatePeerPair(const std::string &left, const std::string &right) {
   makePair(left, right, ls, rs);
   makePair(right, left, rs, ls);
 
-  ls->ondatachannel(ls->CreateDataChannel(left));
+  for (int index = 0; index < 10; index++) {
+    ls->ondatachannel(ls->CreateDataChannel(left));
+  }
 
   open_peers += 2;
 
@@ -228,19 +260,21 @@ const char *names[] = {
   "mary",
   "harry",
   "candice",
-  "kelly",
-  "jesse",
-  "edward",
-  "george",
-  "albert",
-  "alice",
-  "bob",
+  //"kelly",
+  //"jesse",
+  //"edward",
+  //"george",
+  //"albert",
+  //"alice",
+  //"bob",
+  //"stuart",
 };
 
 int main() {
   Module::Init();
 
   size_t peer_count = (sizeof(names) / sizeof(const char *));
+  size_t expected_count = peer_count * peer_count - peer_count;
 
   std::cout << "Creating Mesh Network with " << peer_count << " peers." << std::endl;
 
@@ -250,20 +284,21 @@ int main() {
     }
   }
 
-  SetTimeout(&ClosePeers, 30000);
+  SetTimeout(&ClosePeers, 15000);
 
   Module::DispatchEvents(true);
   Module::Dispose();
 
-  std::cout << "Peers created: " << open_peers << std::endl;
-  std::cout << "Peers closed: " << closed_peers << std::endl;
-  std::cout << "Datachannels opened: " << open_channels << std::endl;
-  std::cout << "Datachannels closed: " << closed_channels << std::endl;
-  std::cout << "Total messages: " << messages << std::endl;
-  std::cout << "Ping send count: " << send_ping << std::endl;
-  std::cout << "Ping received count: " << recv_ping << std::endl;
-  std::cout << "Pong send count: " << send_pong << std::endl;
-  std::cout << "Pong received count: " << recv_pong << std::endl;
+  std::cout << "Peers created: " << open_peers << " (expected: " << expected_count << ")" << std::endl;
+  std::cout << "Peers closed: " << closed_peers << " (expected: " << expected_count << ")" << std::endl;
+  std::cout << "Datachannels opened: " << open_channels << " (expected: " << expected_count * 10 << ")" << std::endl;
+  std::cout << "Datachannels closed: " << closed_channels << " (expected: " << expected_count * 10 << ")" << std::endl;
+  std::cout << "Messages received: " << messages_in << " (expected: " << expected_count * 10 * 10 * 2 << ")" << std::endl;
+  std::cout << "Messages sended: " << messages_out << " (expected: " << expected_count * 10 * 10 * 2 << ")" << std::endl;
+  std::cout << "Ping send count: " << send_ping << " (expected: " << expected_count * 10 * 10 << ")" << std::endl;
+  std::cout << "Ping received count: " << recv_ping << " (expected: " << expected_count * 10 * 10 << ")" << std::endl;
+  std::cout << "Pong send count: " << send_pong << " (expected: " << expected_count * 10 * 10 << ")" << std::endl;
+  std::cout << "Pong received count: " << recv_pong << " (expected: " << expected_count * 10 * 10 << ")" << std::endl;
 
   return 0;
 }
