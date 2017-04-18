@@ -838,8 +838,16 @@ class MediaStream : virtual public Reference {
 
 typedef std::vector<Let<MediaStream>> MediaStreams;
 
-class CRTC_EXPORT AudioBuffer : virtual ArrayBuffer {
+class CRTC_EXPORT AudioBuffer : virtual public ArrayBuffer {
    CRTC_PRIVATE(AudioBuffer);
+
+  public:
+    static Let<AudioBuffer> New(int channels = 2, int sampleRate = 44100, int bitsPerSample = 8);
+    static Let<AudioBuffer> New(const Let<ArrayBuffer> &buffer, int channels = 2, int sampleRate = 44100, int bitsPerSample = 8);
+
+    virtual int Channels() const = 0;
+    virtual int SampleRate() const = 0; 
+    virtual int BitsPerSample() const = 0;
 
   protected:
     explicit AudioBuffer() { }
@@ -880,12 +888,12 @@ class CRTC_EXPORT AudioSink : virtual public MediaStreamTrack {
     ~AudioSink() override { }
 };
 
-class CRTC_EXPORT I420P : public ArrayBuffer {
-    CRTC_PRIVATE(I420P);
+class CRTC_EXPORT ImageBuffer : public ArrayBuffer {
+    CRTC_PRIVATE(ImageBuffer);
 
   public:
-    static Let<I420P> New(int width, int height);
-    static Let<I420P> New(const Let<ArrayBuffer> &buffer, int width, int height);
+    static Let<ImageBuffer> New(int width, int height);
+    static Let<ImageBuffer> New(const Let<ArrayBuffer> &buffer, int width, int height);
 
     static size_t ByteLength(int height, int stride_y, int stride_u, int stride_v);
     static size_t ByteLength(int width, int height);
@@ -902,8 +910,8 @@ class CRTC_EXPORT I420P : public ArrayBuffer {
     virtual int StrideV() const = 0;
 
   protected:
-    explicit I420P() { }
-    ~I420P() override { }
+    explicit ImageBuffer() { }
+    ~ImageBuffer() override { }
 };
 
 class CRTC_EXPORT VideoSource : virtual public MediaStream {
@@ -919,7 +927,7 @@ class CRTC_EXPORT VideoSource : virtual public MediaStream {
     virtual int Height() const = 0;
     virtual float Fps() const = 0;
 
-    virtual void Write(const Let<I420P> &frame, ErrorCallback callback = ErrorCallback()) = 0;
+    virtual void Write(const Let<ImageBuffer> &frame, ErrorCallback callback = ErrorCallback()) = 0;
 
     Callback ondrain;
 
@@ -937,7 +945,7 @@ class CRTC_EXPORT VideoSink : virtual public MediaStreamTrack {
     virtual bool IsRunning() const = 0;
     virtual void Stop() = 0;
 
-    Functor<void(const Let<I420P> &frame)> ondata;
+    Functor<void(const Let<ImageBuffer> &frame)> ondata;
 
   protected:
     explicit VideoSink() { }
