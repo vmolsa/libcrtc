@@ -27,26 +27,28 @@
 #include "crtc.h"
 #include "audiosource.h"
 
+
 using namespace crtc;
 
 AudioSourceInternal::AudioSourceInternal() {
-
+  _audio->Drain.connect(this, &AudioSourceInternal::OnDrain);
 }
 
 AudioSourceInternal::~AudioSourceInternal() {
-  
+  _audio->StopRecording();
+  _audio->Drain.disconnect(this);
 }
 
 bool AudioSourceInternal::IsRunning() const {
-  return false;
+  return _audio->Recording();
 }
 
 void AudioSourceInternal::Stop() {
-
+  _audio->StopRecording();
 }
 
 void AudioSourceInternal::Write(const Let<AudioBuffer> &buffer, ErrorCallback callback) {
-
+  _audio->Write(buffer, callback);
 }
 
 std::string AudioSourceInternal::Id() const { 
@@ -75,6 +77,10 @@ MediaStreamTracks AudioSourceInternal::GetVideoTracks() const {
 
 Let<MediaStream> AudioSourceInternal::Clone() {
   return MediaStreamInternal::Clone();
+}
+
+void AudioSourceInternal::OnDrain() {
+  ondrain();
 }
 
 Let<AudioSource> AudioSource::New() {

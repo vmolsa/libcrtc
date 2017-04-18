@@ -28,9 +28,10 @@
 
 #include "crtc.h"
 #include "mediastream.h"
+#include "audiodevice.h"
 
 namespace crtc { 
-  class AudioSourceInternal : public AudioSource, public MediaStreamInternal {
+  class AudioSourceInternal : public AudioSource, public MediaStreamInternal, public sigslot::has_slots<> {
       friend class Let<AudioSourceInternal>;
       friend class AudioSource;
     public:
@@ -50,6 +51,11 @@ namespace crtc {
     protected:
       explicit AudioSourceInternal();
       ~AudioSourceInternal() override;
+
+      void OnDrain();
+
+      static volatile int counter;
+      rtc::scoped_refptr<AudioDevice> _audio;
   };
 };
 
