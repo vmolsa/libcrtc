@@ -34,194 +34,133 @@
 #include "webrtc/typedefs.h"
 
 namespace crtc {
-  class AudioDevice : public FakeAudioDeviceModule {
+  class AudioDevice : public webrtc::FakeAudioDeviceModule {
     public:
-      AudioDevice(float khz = 44.1, int channels = 2) :
-        _freq(44.1 * 1000),
-        _channels(channels),
-        _tick(EventTimerWrapper::Create()),
-        _thread()
+      AudioDevice() :
+        _capturing(false),
+        _drainNeeded(false),
+        _clock(RealTimeClock::New(Functor<void()>(this, &AudioDevice::OnTime)))
       {
         
       }
 
       ~AudioDevice() override {
-
+        StopRecording();
+        _clock->Stop();
       }
-    private:
+
+      sigslot::signal0<> Drain;
+
+      inline void Write(const Let<AudioBuffer> &buffer, ErrorCallback callback) {
+        rtc::CritScope cs(&_lock);
+
+        if (Recording()) {
+          _queue.push_back(Queue(buffer, callback));
+        } else {
+          callback(Error::New("AudioDevice is not recording.", __FILE__, __LINE__));
+        }
+      }
+
       inline int32_t Init() override {
-
+        _clock->Start(100); // 100 * 10ms = 1000ms 
+        return 0;
       }
 
-      inline int32_t RegisterAudioCallback(AudioTransport* callback) override {
-
+      inline int32_t RegisterAudioCallback(webrtc::AudioTransport* callback) override {
+        _callback = callback;
+        return 0;
       }
 
       inline int32_t StartPlayout() override {
-
+        return -1;
       }
 
       inline int32_t StopPlayout() override {
-
+        return 0;
       }
 
       inline int32_t StartRecording() override {
-
+        rtc::CritScope cs(&_lock);
+        _capturing = true;
+        return 0;
       }
 
       inline int32_t StopRecording() override {
-
+        rtc::CritScope cs(&_lock);
+        _capturing = false;
+        return 0;
       }
 
       inline bool Playing() const override {
-
+        return false;
       }
 
       inline bool Recording() const override {
-
+        rtc::CritScope cs(&_lock);
+        return _capturing;
       }
 
-      inline static bool Run(void* obj) {
-        static_cast<FakeAudioDevice*>(obj)->ProcessAudio();
-        return true;
-      }
+    private:
+      class Queue {
+        public:
+          explicit Queue() 
+          { }
 
-      inline void ProcessAudio() {
-        {
-          rtc::CritScope cs(&lock_);
-          if (capturing_) {
-            // Capture 10ms of audio. 2 bytes per sample.
-            rtc::ArrayView<const int16_t> audio_data = capturer_->Capture();
-            uint32_t new_mic_level = 0;
-            audio_callback_->RecordedDataIsAvailable(
-                audio_data.data(), audio_data.size(), 2, 1, sampling_frequency_in_hz_,
-                0, 0, 0, false, new_mic_level);
+          Queue(const Let<AudioBuffer> &audio_buffer, const ErrorCallback &errorCallback) : 
+            buffer(audio_buffer),
+            callback(errorCallback),
+            timestamp(rtc::TimeNanos())
+          { }
+
+          Let<AudioBuffer> buffer;
+          ErrorCallback callback;
+          int64_t timestamp;
+      };
+
+      inline void OnTime() {
+        if (_capturing && _callback) {
+          Queue pending;
+
+          {
+            rtc::CritScope cs(&_lock);
+
+            if (!_queue.empty()) {
+              pending = _queue.front();
+              _queue.pop_front();
+            } else {
+              if (_drainNeeded) {
+                _drainNeeded = false;
+                Drain();
+              }
+
+              return;
+            } 
           }
-          if (rendering_) {
-            size_t samples_out = 0;
-            int64_t elapsed_time_ms = -1;
-            int64_t ntp_time_ms = -1;
-            audio_callback_->NeedMorePlayData(
-                num_samples_per_frame_, 2, 1, sampling_frequency_in_hz_,
-                playout_buffer_.data(), samples_out, &elapsed_time_ms, &ntp_time_ms);
+
+          uint32_t new_mic_level = 0;
+          _callback->RecordedDataIsAvailable(pending.buffer->Data(), pending.buffer->ByteLength(), pending.buffer->BitsPerSample() / 8, pending.buffer->Channels(), pending.buffer->SampleRate(), 0, 0, 0, false, new_mic_level);
+
+          pending.callback(Let<Error>());
+
+          {
+            rtc::CritScope cs(&_lock);
+
+            if (!_queue.empty()) {
+              _drainNeeded = true;
+            }
           }
         }
-
-        _tick->Wait(WEBRTC_EVENT_INFINITE);
       }
 
-  protected:
       rtc::CriticalSection _lock;
 
-      const int _freq;
-      const int _channels;
-      const size_t _samples;
+      bool _capturing;
+      bool _drainNeeded;
       
+      std::list<Queue> _queue GUARDED_BY(_lock);
       webrtc::AudioTransport* _callback GUARDED_BY(_lock);
-
-      std::unique_ptr<EventTimerWrapper> _tick;
-      Let<Worker> _worker;
-      rtc::Thread* _thread;
+      Let<RealTimeClock> _clock;
   };
 };
-
-class FakeAudioDevice::PulsedNoiseCapturer {
- public:
-  PulsedNoiseCapturer(size_t num_samples_per_frame, int16_t max_amplitude)
-      : fill_with_zero_(false),
-        random_generator_(1),
-        max_amplitude_(max_amplitude),
-        random_audio_(num_samples_per_frame),
-        silent_audio_(num_samples_per_frame, 0) {
-    RTC_DCHECK_GT(max_amplitude, 0);
-  }
-  rtc::ArrayView<const int16_t> Capture() {
-    fill_with_zero_ = !fill_with_zero_;
-    if (!fill_with_zero_) {
-      std::generate(random_audio_.begin(), random_audio_.end(), [&]() {
-        return random_generator_.Rand(-max_amplitude_, max_amplitude_);
-      });
-    }
-    return fill_with_zero_ ? silent_audio_ : random_audio_;
-  }
- private:
-  bool fill_with_zero_;
-  Random random_generator_;
-  const int16_t max_amplitude_;
-  std::vector<int16_t> random_audio_;
-  std::vector<int16_t> silent_audio_;
-};
-FakeAudioDevice::FakeAudioDevice(float speed,
-                                 int sampling_frequency_in_hz,
-                                 int16_t max_amplitude)
-    : sampling_frequency_in_hz_(sampling_frequency_in_hz),
-      num_samples_per_frame_(
-          rtc::CheckedDivExact(sampling_frequency_in_hz_, kFramesPerSecond)),
-      speed_(speed),
-      audio_callback_(nullptr),
-      rendering_(false),
-      capturing_(false),
-      capturer_(new FakeAudioDevice::PulsedNoiseCapturer(num_samples_per_frame_,
-                                                         max_amplitude)),
-      playout_buffer_(num_samples_per_frame_, 0),
-      tick_(EventTimerWrapper::Create()),
-      thread_(FakeAudioDevice::Run, this, "FakeAudioDevice") {
-  RTC_DCHECK(
-      sampling_frequency_in_hz == 8000 || sampling_frequency_in_hz == 16000 ||
-      sampling_frequency_in_hz == 32000 || sampling_frequency_in_hz == 44100 ||
-      sampling_frequency_in_hz == 48000);
-}
-FakeAudioDevice::~FakeAudioDevice() {
-  StopPlayout();
-  StopRecording();
-  thread_.Stop();
-}
-int32_t FakeAudioDevice::StartPlayout() {
-  rtc::CritScope cs(&lock_);
-  rendering_ = true;
-  return 0;
-}
-int32_t FakeAudioDevice::StopPlayout() {
-  rtc::CritScope cs(&lock_);
-  rendering_ = false;
-  return 0;
-}
-int32_t FakeAudioDevice::StartRecording() {
-  rtc::CritScope cs(&lock_);
-  capturing_ = true;
-  return 0;
-}
-int32_t FakeAudioDevice::StopRecording() {
-  rtc::CritScope cs(&lock_);
-  capturing_ = false;
-  return 0;
-}
-int32_t FakeAudioDevice::Init() {
-  RTC_CHECK(tick_->StartTimer(true, kFrameLengthMs / speed_));
-  thread_.Start();
-  thread_.SetPriority(rtc::kHighPriority);
-  return 0;
-}
-int32_t FakeAudioDevice::RegisterAudioCallback(AudioTransport* callback) {
-  rtc::CritScope cs(&lock_);
-  RTC_DCHECK(callback || audio_callback_ != nullptr);
-  audio_callback_ = callback;
-  return 0;
-}
-bool FakeAudioDevice::Playing() const {
-  rtc::CritScope cs(&lock_);
-  return rendering_;
-}
-bool FakeAudioDevice::Recording() const {
-  rtc::CritScope cs(&lock_);
-  return capturing_;
-}
-bool FakeAudioDevice::Run(void* obj) {
-  static_cast<FakeAudioDevice*>(obj)->ProcessAudio();
-  return true;
-}
-void FakeAudioDevice::ProcessAudio() {
-  
-}
 
 #endif
