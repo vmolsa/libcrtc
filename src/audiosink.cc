@@ -97,8 +97,6 @@ void AudioSinkInternal::Stop() {
     _audio_track->RemoveSink(this);
     _event.Dispose();
   }
-
-  ondata.Dispose();
 }
 
 void AudioSinkInternal::OnEnded() {

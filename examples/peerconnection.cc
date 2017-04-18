@@ -7,6 +7,25 @@
 
 using namespace crtc;
 
+void RemovePeerEvents(const Let<RTCPeerConnection> &peer) {
+  peer->onsignalingstatechange.Dispose();
+  peer->onicegatheringstatechange.Dispose();
+  peer->oniceconnectionstatechange.Dispose();
+  peer->onicecandidatesremoved.Dispose();
+  peer->onaddstream.Dispose();
+  peer->onremovestream.Dispose();
+  peer->ondatachannel.Dispose();
+  peer->onicecandidate.Dispose();
+}
+
+void RemoveChannelEvents(const Let<RTCDataChannel> &dc) {
+  dc->onopen.Dispose();
+  dc->onclose.Dispose();
+  dc->onerror.Dispose();
+  dc->onmessage.Dispose();
+}
+
+
 void makePair(const std::string &left, const std::string &right,
               const Let<RTCPeerConnection> &ls, const Let<RTCPeerConnection> &rs) 
 {
@@ -58,6 +77,10 @@ void makePair(const std::string &left, const std::string &right,
         std::cout << left << " <-> " << right << " [OnSignalingStateChange]: have-remote-pranswer" << std::endl;
         break;
       case RTCPeerConnection::kSignalingClosed:
+        SetImmediate([=]() {
+          RemovePeerEvents(ls);
+        });
+
         std::cout << left << " <-> " << right << " [OnSignalingStateChange]: closed" << std::endl;
         break;
     }
@@ -124,6 +147,10 @@ void makePair(const std::string &left, const std::string &right,
     };
 
     dataChannel->onclose = [=]() {
+      SetImmediate([=]() {
+        RemoveChannelEvents(dataChannel);
+      });
+
       std::cout << left << " ==> " << right << " [DataChannel: " << dataChannel->Id() << ", Label: " << dataChannel->Label() << "]: Closed" << std::endl;
     };
 
@@ -189,7 +216,7 @@ int main() {
   SetTimeout([=]() {
     alice->Close();
     bob->Close();
-  }, 30000);
+  }, 10000);
 
   Module::DispatchEvents(true);
   Module::Dispose();

@@ -135,10 +135,6 @@ void RTCDataChannelInternal::OnStateChange() {
     case webrtc::DataChannelInterface::kClosed:
       onclose();
       _event.Dispose();
-      onopen.Dispose();
-      onclose.Dispose();
-      onerror.Dispose();
-      onmessage.Dispose();
       break;
   }
 }
