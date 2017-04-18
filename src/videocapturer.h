@@ -144,7 +144,7 @@ namespace crtc {
 
       sigslot::signal0<> Drain;
 
-      inline void Write(const Let<I420P> &i420p_frame, ErrorCallback callback) {
+      inline void Write(const Let<ImageBuffer> &i420p_frame, ErrorCallback callback) {
         rtc::CritScope cs(&_lock);
 
         cricket::CaptureState state = capture_state();
@@ -192,13 +192,13 @@ namespace crtc {
           explicit Queue() 
           { }
 
-          Queue(const Let<I420P> &i420p_frame, const ErrorCallback &errorCallback) : 
+          Queue(const Let<ImageBuffer> &i420p_frame, const ErrorCallback &errorCallback) : 
             frame(i420p_frame),
             callback(errorCallback),
             timestamp(rtc::TimeNanos())
           { }
 
-          Let<I420P> frame;
+          Let<ImageBuffer> frame;
           ErrorCallback callback;
           int64_t timestamp;
       };
@@ -255,7 +255,7 @@ namespace crtc {
         return Error::New("VideoSource ended", __FILE__, __LINE__);
       }
 
-      void OnTime() {
+      inline void OnTime() {
         if ((capture_state() == cricket::CaptureState::CS_RUNNING)) {
           Queue pending;
 
@@ -275,7 +275,7 @@ namespace crtc {
             } 
           }
 
-          pending.callback(Write(WrapI420P::New(pending.frame), pending.timestamp));
+          pending.callback(Write(WrapImageBuffer::New(pending.frame), pending.timestamp));
 
           {
             rtc::CritScope cs(&_lock);
