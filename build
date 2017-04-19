@@ -34,6 +34,9 @@ if not os.path.exists(depot_tools_dir):
 
 os.environ['PATH'] += os.pathsep + depot_tools_dir
 
+if not os.path.exists(third_party_dir):
+  os.mkdir(third_party_dir)
+
 if not os.path.exists(webrtc_dir):
   os.mkdir(webrtc_dir)
 
