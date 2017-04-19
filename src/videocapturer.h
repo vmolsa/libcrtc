@@ -29,7 +29,7 @@
 #include <list>
 
 #include "crtc.h"
-#include "Worker.h"
+#include "worker.h"
 
 #include "webrtc/base/timeutils.h"
 #include "webrtc/media/base/videocapturer.h"
