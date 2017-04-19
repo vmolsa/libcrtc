@@ -1,5 +1,6 @@
 declare_args() {
   build_with_chromium = false
+  use_x11 = false
 }
 
 import("//webrtc/webrtc.gni")
