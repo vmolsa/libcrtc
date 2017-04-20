@@ -92,10 +92,9 @@ if not os.path.exists(webrtc_sync):
 
   os.chdir(root_dir)
 
-if not os.path.exists(out_dir) or not os.path.exists(os.path.join(out_dir, 'build.ninja')):  
-  os.chdir(webrtc_src_dir)
-  subprocess.call(['gn', 'gen', out_dir, gn_flags])
-  os.chdir(root_dir)
+os.chdir(webrtc_src_dir)
+subprocess.call(['gn', 'gen', out_dir, gn_flags])
+os.chdir(root_dir)
 
 if os.environ.get('BUILD_WEBRTC_EXAMPLES') == 'true':
   subprocess.call(['ninja', '-C', 'out', 'crtc-examples'])
