@@ -67,6 +67,7 @@ namespace crtc {
       }
 
       inline int32_t RegisterAudioCallback(webrtc::AudioTransport* callback) override {
+        rtc::CritScope cs(&_lock);
         _callback = callback;
         return 0;
       }
@@ -118,7 +119,7 @@ namespace crtc {
       };
 
       inline void OnTime() {
-        if (_capturing && _callback) {
+        if (_capturing) {
           Queue pending;
 
           {
@@ -138,8 +139,12 @@ namespace crtc {
           }
 
           uint32_t new_mic_level = 0;
-          _callback->RecordedDataIsAvailable(pending.buffer->Data(), pending.buffer->ByteLength(), pending.buffer->BitsPerSample() / 8, pending.buffer->Channels(), pending.buffer->SampleRate(), 0, 0, 0, false, new_mic_level);
 
+          {
+            rtc::CritScope cs(&_lock);
+            _callback->RecordedDataIsAvailable(pending.buffer->Data(), pending.buffer->ByteLength(), pending.buffer->BitsPerSample() / 8, pending.buffer->Channels(), pending.buffer->SampleRate(), 0, 0, 0, false, new_mic_level);
+          }
+          
           pending.callback(Let<Error>());
 
           {
