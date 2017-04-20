@@ -21,6 +21,12 @@ if sys.platform.startswith('linux'):
 
 target_os = target_platform
 target_cpu = platform.machine()
+
+if (target_cpu == 'x86_64'):
+  target_cpu = 'x64'
+elif (target_cpu == 'i386'):
+  target_cpu = 'x86'
+
 release_name = ''.join(subprocess.check_output(['git', 'describe', '--abbrev=0', '--tags']).split())
 
 if (os.environ.get('WEBRTC_TARGET_OS')):
