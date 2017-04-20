@@ -512,7 +512,7 @@ Let<RTCPeerConnection> RTCPeerConnection::New(const RTCPeerConnection::RTCConfig
   return Let<RTCPeerConnectionInternal>::New(config);
 }
 
-RTCPeerConnection::RTCConfiguration() : 
+RTCPeerConnection::RTCConfiguration::RTCConfiguration() : 
   iceCandidatePoolSize(0),
   bundlePolicy(kMaxBundle),
   iceServers(defaultIceServers),
@@ -520,8 +520,8 @@ RTCPeerConnection::RTCConfiguration() :
   rtcpMuxPolicy(kRequire)
 { }
 
-RTCPeerConnection::~RTCConfiguration() {
-  
+RTCPeerConnection::RTCConfiguration::~RTCConfiguration() {
+
 }
 
 RTCPeerConnection::RTCPeerConnection() {
