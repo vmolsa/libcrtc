@@ -5,6 +5,7 @@ import sys
 import subprocess
 import shutil
 import tarfile
+import platform
 
 root_dir = os.path.dirname(os.path.realpath(__file__))
 dist_dir = os.path.join(root_dir, 'dist')
@@ -13,8 +14,17 @@ dist_lib_dir = os.path.join(dist_dir, 'lib')
 out_dir = os.path.join(root_dir, 'out')
 third_party_dir = os.path.join(root_dir, '3dparty')
 
-release_name = '1.0.0-beta'
-pkg_name = 'libcrtc-' + release_name + '-' + sys.platform + '.tar.gz'
+target_os = sys.platform
+target_cpu = platform.machine()
+release_name = ''.join(subprocess.check_output(['git', 'describe', '--abbrev=0', '--tags']).split())
+
+if (os.environ.get('WEBRTC_TARGET_OS')):
+  target_os = os.environ['WEBRTC_TARGET_OS']
+
+if (os.environ.get('WEBRTC_TARGET_CPU')):
+  target_cpu = os.environ['WEBRTC_TARGET_CPU']
+
+pkg_name = 'libcrtc-' + release_name + '-' + target_os  + '-' + target_cpu + '.tar.gz'
 
 def build_archive():
   with tarfile.open(os.path.join(dist_dir, pkg_name), "w:gz") as tar:
@@ -28,6 +38,12 @@ webrtc_crtc_dir = os.path.join(webrtc_src_dir, 'crtc')
 webrtc_sync = os.path.join(third_party_dir, '.webrtc_sync')
 
 gn_flags = '--args=is_debug=false is_component_build=true rtc_include_tests=false use_ozone=true is_desktop_linux=false rtc_use_gtk=false clang_use_chrome_plugins=true rtc_enable_protobuf=false'
+
+if (target_os != sys.platform):
+  gn_flags += ' target_os=' + target_os
+
+if (target_cpu != platform.machine()):
+  gn_flags += ' target_cpu=' + target_cpu
 
 if not os.path.exists(third_party_dir):
   os.mkdir(third_party_dir)
