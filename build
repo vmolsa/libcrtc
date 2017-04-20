@@ -14,7 +14,12 @@ dist_lib_dir = os.path.join(dist_dir, 'lib')
 out_dir = os.path.join(root_dir, 'out')
 third_party_dir = os.path.join(root_dir, '3dparty')
 
-target_os = sys.platform
+target_platform = sys.platform
+
+if sys.platform.startswith('linux'):
+  target_platform = 'linux'
+
+target_os = target_platform
 target_cpu = platform.machine()
 release_name = ''.join(subprocess.check_output(['git', 'describe', '--abbrev=0', '--tags']).split())
 
@@ -39,7 +44,7 @@ webrtc_sync = os.path.join(third_party_dir, '.webrtc_sync')
 
 gn_flags = '--args=is_debug=false is_component_build=true rtc_include_tests=false use_ozone=true is_desktop_linux=false rtc_use_gtk=false clang_use_chrome_plugins=true rtc_enable_protobuf=false'
 
-if (target_os != sys.platform):
+if (target_os != target_platform):
   gn_flags += ' target_os="' + target_os + '"'
 
 if (target_cpu != platform.machine()):
