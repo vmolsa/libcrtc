@@ -47,14 +47,16 @@ namespace crtc {
       int Channels() const override;
       int SampleRate() const override;
       int BitsPerSample() const override;
+      int Frames() const override;
 
     protected:
-      explicit AudioBufferInternal(const Let<ArrayBuffer> &buffer, int channels, int sampleRate, int bitsPerSample);
+      explicit AudioBufferInternal(const Let<ArrayBuffer> &buffer, int channels, int sampleRate, int bitsPerSample, int frames);
       ~AudioBufferInternal() override;
 
       int _channels;
       int _samplerate;
       int _bitspersample;
+      int _frames;
   };
 };
 

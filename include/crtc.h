@@ -842,12 +842,13 @@ class CRTC_EXPORT AudioBuffer : virtual public ArrayBuffer {
    CRTC_PRIVATE(AudioBuffer);
 
   public:
-    static Let<AudioBuffer> New(int channels = 2, int sampleRate = 44100, int bitsPerSample = 8);
-    static Let<AudioBuffer> New(const Let<ArrayBuffer> &buffer, int channels = 2, int sampleRate = 44100, int bitsPerSample = 8);
+    static Let<AudioBuffer> New(int channels = 2, int sampleRate = 44100, int bitsPerSample = 8, int frames = 1);
+    static Let<AudioBuffer> New(const Let<ArrayBuffer> &buffer, int channels = 2, int sampleRate = 44100, int bitsPerSample = 8, int frames = 1);
 
     virtual int Channels() const = 0;
     virtual int SampleRate() const = 0; 
     virtual int BitsPerSample() const = 0;
+    virtual int Frames() const = 0;
 
   protected:
     explicit AudioBuffer() { }

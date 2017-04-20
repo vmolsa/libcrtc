@@ -29,11 +29,12 @@
 
 using namespace crtc;
 
-AudioBufferInternal::AudioBufferInternal(const Let<ArrayBuffer> &buffer, int channels, int sampleRate, int bitsPerSample) :
+AudioBufferInternal::AudioBufferInternal(const Let<ArrayBuffer> &buffer, int channels, int sampleRate, int bitsPerSample, int frames) :
   ArrayBufferInternal(buffer),
   _channels(channels),
   _samplerate(sampleRate),
-  _bitspersample(bitsPerSample)
+  _bitspersample(bitsPerSample),
+  _frames(frames)
 { }
 
 AudioBufferInternal::~AudioBufferInternal() {
@@ -72,11 +73,15 @@ int AudioBufferInternal::BitsPerSample() const {
   return _bitspersample;
 }
 
-Let<AudioBuffer> AudioBuffer::New(int channels, int sampleRate, int bitsPerSample) {
-  return Let<AudioBufferInternal>::New(ArrayBuffer::New(sampleRate / 100), channels, sampleRate, bitsPerSample);
+int AudioBufferInternal::Frames() const {
+  return _frames;
 }
 
-Let<AudioBuffer> AudioBuffer::New(const Let<ArrayBuffer> &buffer, int channels, int sampleRate, int bitsPerSample) {
-  return Let<AudioBufferInternal>::New(buffer, channels, sampleRate, bitsPerSample);
+Let<AudioBuffer> AudioBuffer::New(int channels, int sampleRate, int bitsPerSample, int frames) {
+  return Let<AudioBufferInternal>::New(ArrayBuffer::New(sampleRate / 100), channels, sampleRate, bitsPerSample, frames);
+}
+
+Let<AudioBuffer> AudioBuffer::New(const Let<ArrayBuffer> &buffer, int channels, int sampleRate, int bitsPerSample, int frames) {
+  return Let<AudioBufferInternal>::New(buffer, channels, sampleRate, bitsPerSample, frames);
 }
 
