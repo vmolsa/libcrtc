@@ -47,7 +47,7 @@ namespace crtc {
       explicit WorkerInternal();
       ~WorkerInternal() override;
 
-      virtual bool Wait(int cms, bool process_io);
+      bool Wait(int cms, bool process_io) final;
       void Run() override;
   };
 
