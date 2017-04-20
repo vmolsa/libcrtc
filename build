@@ -40,10 +40,10 @@ webrtc_sync = os.path.join(third_party_dir, '.webrtc_sync')
 gn_flags = '--args=is_debug=false is_component_build=true rtc_include_tests=false use_ozone=true is_desktop_linux=false rtc_use_gtk=false clang_use_chrome_plugins=true rtc_enable_protobuf=false'
 
 if (target_os != sys.platform):
-  gn_flags += ' target_os=' + target_os
+  gn_flags += ' target_os="' + target_os + '"'
 
 if (target_cpu != platform.machine()):
-  gn_flags += ' target_cpu=' + target_cpu
+  gn_flags += ' target_cpu="' + target_cpu + '"'
 
 if not os.path.exists(third_party_dir):
   os.mkdir(third_party_dir)
