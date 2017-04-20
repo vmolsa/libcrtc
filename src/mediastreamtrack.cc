@@ -142,3 +142,11 @@ rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> MediaStreamTrackInternal::
 rtc::scoped_refptr<webrtc::MediaSourceInterface> MediaStreamTrackInternal::GetSource() const {
   return _source;
 }
+
+MediaStreamTrack::MediaStreamTrack() {
+
+}
+
+MediaStreamTrack::~MediaStreamTrack() {
+  
+}

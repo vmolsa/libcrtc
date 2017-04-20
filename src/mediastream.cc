@@ -182,3 +182,11 @@ void MediaStreamInternal::OnChanged() {
   _audio_tracks = audio_tracks;
   _video_tracks = video_tracks;
 }
+
+MediaStream::MediaStream() {
+
+}
+
+MediaStream::~MediaStream() {
+  
+}

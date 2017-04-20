@@ -798,8 +798,8 @@ class MediaStreamTrack : virtual public Reference {
     Callback onunmute;
 
   protected:
-    explicit MediaStreamTrack() { }
-    ~MediaStreamTrack() override { }
+    explicit MediaStreamTrack();
+    ~MediaStreamTrack() override;
 };
 
 typedef std::vector<Let<MediaStreamTrack>> MediaStreamTracks;
@@ -832,8 +832,8 @@ class MediaStream : virtual public Reference {
     Functor<void(const Let<MediaStreamTrack> &track)> onremovetrack;
     
   protected:
-    explicit MediaStream() { }
-    ~MediaStream() override { }
+    explicit MediaStream();
+    ~MediaStream() override;
 };
 
 typedef std::vector<Let<MediaStream>> MediaStreams;
@@ -869,8 +869,8 @@ class CRTC_EXPORT AudioSource : virtual public MediaStream {
     Callback ondrain;
 
   protected:
-    explicit AudioSource() { }
-    ~AudioSource() override { }
+    explicit AudioSource();
+    ~AudioSource() override;
 };
 
 class CRTC_EXPORT AudioSink : virtual public MediaStreamTrack {
@@ -885,8 +885,8 @@ class CRTC_EXPORT AudioSink : virtual public MediaStreamTrack {
     Functor<void(const Let<AudioBuffer> &buffer)> ondata;
 
   protected:
-    explicit AudioSink() { }
-    ~AudioSink() override { }
+    explicit AudioSink();
+    ~AudioSink() override;
 };
 
 class CRTC_EXPORT ImageBuffer : public ArrayBuffer {
@@ -933,8 +933,8 @@ class CRTC_EXPORT VideoSource : virtual public MediaStream {
     Callback ondrain;
 
   protected:
-    explicit VideoSource() { }
-    ~VideoSource() override { }
+    explicit VideoSource();
+    ~VideoSource() override;
 };
 
 class CRTC_EXPORT VideoSink : virtual public MediaStreamTrack {
@@ -949,8 +949,8 @@ class CRTC_EXPORT VideoSink : virtual public MediaStreamTrack {
     Functor<void(const Let<ImageBuffer> &frame)> ondata;
 
   protected:
-    explicit VideoSink() { }
-    ~VideoSink() override { }
+    explicit VideoSink();
+    ~VideoSink() override;
 };
 
 /// \sa https://developer.mozilla.org/en/docs/Web/API/RTCDataChannel
@@ -1038,8 +1038,8 @@ class CRTC_EXPORT RTCDataChannel : virtual public Reference {
     Callback onopen;
 
   protected:
-    explicit RTCDataChannel() { }
-    ~RTCDataChannel() override { }
+    explicit RTCDataChannel();
+    ~RTCDataChannel() override;
 };
 
 /// \sa https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection
@@ -1159,13 +1159,8 @@ class CRTC_EXPORT RTCPeerConnection : virtual public Reference {
     /// \sa https://developer.mozilla.org/en-US/docs/Web/API/RTCConfiguration
 
     typedef struct RTCConfiguration {
-      RTCConfiguration() : 
-        iceCandidatePoolSize(0),
-        bundlePolicy(kMaxBundle),
-        iceServers(defaultIceServers),
-        iceTransportPolicy(kAll),
-        rtcpMuxPolicy(kRequire)
-      { }
+      explicit RTCConfiguration();
+      ~RTCConfiguration();
 
       uint16_t iceCandidatePoolSize;
       RTCBundlePolicy bundlePolicy;       
@@ -1266,8 +1261,8 @@ class CRTC_EXPORT RTCPeerConnection : virtual public Reference {
     IceCandidateCallback onicecandidate;
 
   protected:
-    explicit RTCPeerConnection() { }
-    ~RTCPeerConnection() override { }
+    explicit RTCPeerConnection();
+    ~RTCPeerConnection() override;
 };
 }; // namespace crtc
 

@@ -511,3 +511,23 @@ void RTCPeerConnectionInternal::OnRemoveStream(webrtc::MediaStreamInterface* str
 Let<RTCPeerConnection> RTCPeerConnection::New(const RTCPeerConnection::RTCConfiguration &config) {
   return Let<RTCPeerConnectionInternal>::New(config);
 }
+
+RTCPeerConnection::RTCConfiguration() : 
+  iceCandidatePoolSize(0),
+  bundlePolicy(kMaxBundle),
+  iceServers(defaultIceServers),
+  iceTransportPolicy(kAll),
+  rtcpMuxPolicy(kRequire)
+{ }
+
+RTCPeerConnection::~RTCConfiguration() {
+  
+}
+
+RTCPeerConnection::RTCPeerConnection() {
+
+}
+
+RTCPeerConnection::~RTCPeerConnection() {
+  
+}

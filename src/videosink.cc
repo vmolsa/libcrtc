@@ -108,3 +108,11 @@ void VideoSinkInternal::Stop() {
 void VideoSinkInternal::OnEnded() {
   Stop();
 }
+
+VideoSink::VideoSink() {
+
+}
+
+VideoSink::~VideoSink() {
+  
+}

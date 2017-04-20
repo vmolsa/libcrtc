@@ -180,3 +180,11 @@ const uint8_t *WrapRtcBuffer::Data() const {
 std::string WrapRtcBuffer::ToString() const {
   return std::string(reinterpret_cast<const char *>(_data.data()), _data.size());
 }
+
+RTCDataChannel::RTCDataChannel() {
+
+}
+
+RTCDataChannel::~RTCDataChannel() {
+  
+}

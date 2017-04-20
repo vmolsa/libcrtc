@@ -180,3 +180,11 @@ void VideoSourceInternal::OnStateChange(cricket::VideoCapturer* capturer, cricke
 void VideoSourceInternal::OnDrain() {
   ondrain();
 }
+
+VideoSource::VideoSource() {
+
+}
+
+VideoSource::~VideoSource() {
+  
+}

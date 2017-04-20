@@ -86,3 +86,10 @@ void AudioSourceInternal::OnDrain() {
 Let<AudioSource> AudioSource::New() {
   return Let<AudioSourceInternal>::New();
 }
+
+AudioSource::AudioSource() {
+
+}
+
+AudioSource::~AudioSource() {
+  
