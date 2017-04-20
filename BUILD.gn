@@ -1,6 +1,5 @@
 declare_args() {
   build_with_chromium = false
-  use_x11 = false
 }
 
 import("//webrtc/webrtc.gni")
@@ -45,6 +44,15 @@ component("crtc") {
   if (is_mac) {
     defines += [
       "CRTC_OS_OSX"
+    ]
+  }
+
+  if (is_linux) {
+    libs -= [
+      "-lXext",
+      "-lX11",
+      "-lXcomposite",
+      "-lXrender"
     ]
   }
 

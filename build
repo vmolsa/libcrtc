@@ -27,7 +27,7 @@ webrtc_src_dir = os.path.join(webrtc_dir, 'src')
 webrtc_crtc_dir = os.path.join(webrtc_src_dir, 'crtc')
 webrtc_sync = os.path.join(third_party_dir, '.webrtc_sync')
 
-gn_flags = '--args=is_debug=false is_component_build=true clang_use_chrome_plugins=false rtc_use_gtk=false rtc_enable_protobuf=false rtc_use_dummy_audio_file_devices=false rtc_include_tests=false'
+gn_flags = '--args=is_debug=false is_component_build=true rtc_include_tests=false use_ozone=true is_desktop_linux=false rtc_use_gtk=false clang_use_chrome_plugins=false rtc_enable_protobuf=false'
 
 if not os.path.exists(third_party_dir):
   os.mkdir(third_party_dir)
@@ -108,6 +108,3 @@ elif sys.platform.startswith('darwin'):
   shutil.copy(os.path.join(out_dir, 'libboringssl.dylib'), dist_lib_dir)
 
 build_archive()
-
-if os.environ.get('BUILD_WEBRTC_TESTS') == 'true':
-  subprocess.call(['ninja', '-C', 'out', 'webrtc_tests'])
