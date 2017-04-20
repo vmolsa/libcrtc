@@ -4,7 +4,7 @@ declare_args() {
 
 import("//webrtc/webrtc.gni")
 
-component("crtc") {
+rtc_shared_library("crtc") {
   libs = []
   defines = [
     "NDEBUG",
@@ -47,15 +47,6 @@ component("crtc") {
     ]
   }
 
-  if (is_linux) {
-    libs -= [
-      "-lXext",
-      "-lX11",
-      "-lXcomposite",
-      "-lXrender"
-    ]
-  }
-
   cflags = [
     "-fexceptions",
   ]
@@ -71,13 +62,17 @@ component("crtc") {
     "//webrtc/system_wrappers:metrics_default",
   ]
 
+  if (!build_with_chromium && is_clang) {
+    suppressed_configs += [ "//build/config/clang:find_bad_constructs" ]
+  }
+
   include_dirs = [
     "src/protobuf",
     "include",
   ]
 }
 
-executable("promise") {
+rtc_executable("promise") {
   sources = [
     "examples/promise.cc",
   ]
@@ -91,7 +86,7 @@ executable("promise") {
   ]
 }
 
-executable("mesh") {
+rtc_executable("mesh") {
   sources = [
     "examples/mesh.cc",
   ]
@@ -105,7 +100,7 @@ executable("mesh") {
   ]
 }
 
-executable("peerconnection") {
+rtc_executable("peerconnection") {
   sources = [
     "examples/peerconnection.cc",
   ]
@@ -119,7 +114,7 @@ executable("peerconnection") {
   ]
 }
 
-executable("worker") {
+rtc_executable("worker") {
   sources = [
     "examples/worker.cc",
   ]
@@ -133,7 +128,7 @@ executable("worker") {
   ]
 }
 
-executable("source-sink") {
+rtc_executable("source-sink") {
   sources = [
     "examples/source-sink.cc",
   ]
@@ -147,7 +142,7 @@ executable("source-sink") {
   ]
 }
 
-executable("ffmpeg") {
+rtc_executable("ffmpeg") {
   sources = [
     "examples/ffmpeg.cc",
   ]
