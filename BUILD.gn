@@ -6,9 +6,7 @@ import("//webrtc/webrtc.gni")
 
 rtc_shared_library("crtc") {
   libs = []
-  defines = [
-    "NDEBUG",
-  ]
+  defines = []
 
   sources = [
     "src/atomic.cc",
