@@ -49,6 +49,7 @@ rtc_shared_library("crtc") {
     "//webrtc/pc:libjingle_peerconnection",
     "//webrtc/system_wrappers:field_trial_default",
     "//webrtc/system_wrappers:metrics_default",
+    "//webrtc/modules/video_capture:video_capture""
   ]
 
   if (!build_with_chromium && is_clang) {
