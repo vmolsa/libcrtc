@@ -112,12 +112,16 @@ if os.environ.get('BUILD_WEBRTC_EXAMPLES') == 'true':
 else:
   subprocess.call(['ninja', '-C', 'out', 'crtc'])
 
-if os.path.exists(dist_dir):
-  shutil.rmtree(dist_dir)
+if not os.path.exists(dist_dir):
+  os.mkdir(dist_dir)
 
-os.mkdir(dist_dir)
-os.mkdir(dist_include_dir)
-os.mkdir(dist_lib_dir)
+if os.path.exists(dist_include_dir):
+  shutil.rmtree(dist_include_dir)
+  os.mkdir(dist_include_dir)
+
+if os.path.exists(dist_lib_dir):
+  shutil.rmtree(dist_lib_dir)
+  os.mkdir(dist_lib_dir)
 
 shutil.copy(os.path.join(root_dir, 'include', 'crtc.h'), dist_include_dir)
 
