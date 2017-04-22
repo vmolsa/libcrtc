@@ -1,0 +1,37 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import subprocess
+
+if sys.platform.startswith('linux'):
+  os.environ['WEBRTC_TARGET_CPU'] = 'x86'
+  subprocess.call(['./build'])
+
+  os.environ['WEBRTC_TARGET_CPU'] = 'x64'
+  subprocess.call(['./build'])
+
+  os.environ['WEBRTC_TARGET_CPU'] = 'arm'
+  subprocess.call(['./build'])
+
+  os.environ['WEBRTC_TARGET_CPU'] = 'arm64'
+  subprocess.call(['./build'])
+
+  os.environ['WEBRTC_TARGET_CPU'] = 'mipsel'
+  subprocess.call(['./build'])
+
+elif sys.platform.startswith('darwin'):
+  os.environ['WEBRTC_TARGET_CPU'] = 'x64'
+  subprocess.call(['./build'])
+
+  os.environ['WEBRTC_TARGET_CPU'] = 'x64'
+  os.environ['WEBRTC_TARGET_OS'] = 'ios'
+  subprocess.call(['./build'])
+
+  os.environ['WEBRTC_TARGET_CPU'] = 'x86'
+  os.environ['WEBRTC_TARGET_OS'] = 'ios'
+  subprocess.call(['./build'])
+else:
+  os.environ['WEBRTC_TARGET_CPU'] = 'x64'
+  subprocess.call(['./build'])
+
