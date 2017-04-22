@@ -1,0 +1,63 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import tarfile
+import platform
+import subprocess
+import urllib
+
+root_path = os.getcwd()
+base_url = 'https://github.com/vmolsa/libcrtc/releases/download'
+
+target_platform = sys.platform
+
+if sys.platform.startswith('linux'):
+  target_platform = 'linux'
+
+target_os = target_platform
+target_cpu = platform.machine()
+
+if (target_cpu == 'x86_64'):
+  target_cpu = 'x64'
+elif (target_cpu == 'i386'):
+  target_cpu = 'x86'
+
+argc = len(sys.argv)
+argv = str(sys.argv)
+
+release_name = ''.join(subprocess.check_output(['git', 'describe', '--abbrev=0', '--tags']).split())
+
+if (argc == 3):
+  release_name = str(sys.argv[2])
+  print 'Tag: ' +  release_name
+
+pkg_name = 'libcrtc-' + release_name + '-' + target_os  + '-' + target_cpu + '.tar.gz'
+target_path = root_path
+
+if (argc >= 2):
+  target_path = str(sys.argv[1])
+  print 'Target path: ' + target_path
+
+if not os.path.exists(target_path):
+  os.mkdir(target_path)
+
+os.chdir(target_path)
+
+print 'Downloading: ' + base_url + '/' + release_name + '/' + pkg_name
+
+try:
+  urllib.urlretrieve(base_url + '/' + release_name + '/' + pkg_name, pkg_name)
+except ValueError:
+  print 'File not found.'
+  os.chdir(root_path)  
+
+if os.path.exists(pkg_name):
+  try:
+    file = tarfile.open(pkg_name, 'r:gz')
+    try: file.extractall()
+    finally: file.close()
+  except ValueError:
+    print 'Extract failed.'
+  finally:
+    os.chdir(root_path)
