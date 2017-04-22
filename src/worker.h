@@ -50,27 +50,6 @@ namespace crtc {
       bool Wait(int cms, bool process_io) final;
       void Run() override;
   };
-
-  class RealTimeClockInternal : public RealTimeClock {
-      friend class RealTimeClock;
-      friend class Let<RealTimeClock>;
-
-    public:
-      void Start(uint32_t interval_ms = 0) override;
-      void Stop() override;
-
-    protected:
-      explicit RealTimeClockInternal(const Callback &runnable);
-      ~RealTimeClockInternal() override;
-
-      std::unique_ptr<webrtc::EventTimerWrapper> _tick;
-      rtc::PlatformThread _thread;
-      rtc::PlatformThreadId _signal;
-
-      Callback _runnable;
-      
-      static bool Run(void* obj);
-  };
 };
 
 #endif

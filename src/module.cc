@@ -27,7 +27,6 @@
 #include "module.h"
 #include "async.h"
 #include "rtcpeerconnection.h"
-#include "videosource.h"
 
 #include "webrtc/base/thread.h"
 #include "webrtc/base/ssladapter.h"

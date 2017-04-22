@@ -20,13 +20,7 @@ rtc_shared_library("crtc") {
     "src/rtcdatachannel.cc",
     "src/mediastream.cc",
     "src/mediastreamtrack.cc",
-    "src/audiosink.cc",
-    "src/videosource.cc",
-    "src/videosink.cc",
-    "src/imagebuffer.cc",
     "src/time.cc",
-    "src/audiobuffer.cc",
-    "src/audiosource.cc",
   ]
 
   if (is_win) {
