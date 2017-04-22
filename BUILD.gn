@@ -60,20 +60,6 @@ rtc_shared_library("crtc") {
   ]
 }
 
-rtc_executable("promise") {
-  sources = [
-    "examples/promise.cc",
-  ]
-
-  deps = [
-    ":crtc",
-  ]
-
-  include_dirs = [
-    "include"
-  ]
-}
-
 rtc_executable("mesh") {
   sources = [
     "examples/mesh.cc",
@@ -102,56 +88,10 @@ rtc_executable("peerconnection") {
   ]
 }
 
-rtc_executable("worker") {
-  sources = [
-    "examples/worker.cc",
-  ]
-
-  deps = [
-    ":crtc",
-  ]
-
-  include_dirs = [
-    "include"
-  ]
-}
-
-rtc_executable("source-sink") {
-  sources = [
-    "examples/source-sink.cc",
-  ]
-
-  deps = [
-    ":crtc",
-  ]
-
-  include_dirs = [
-    "include"
-  ]
-}
-
-rtc_executable("ffmpeg") {
-  sources = [
-    "examples/ffmpeg.cc",
-  ]
-
-  deps = [
-    ":crtc",
-  ]
-
-  include_dirs = [
-    "include"
-  ]
-}
-
 group("crtc-examples") {
   public_deps = [
-    ":promise",
     ":mesh",
     ":peerconnection",
-    ":worker",
-    ":source-sink",
-    ":ffmpeg",
   ]
 }
 
