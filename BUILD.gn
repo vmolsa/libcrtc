@@ -1,8 +1,5 @@
-declare_args() {
-  build_with_chromium = false
-}
-
 import("//webrtc/webrtc.gni")
+import("//crtc/crtc.gni")
 
 rtc_shared_library("crtc") {
   libs = []
