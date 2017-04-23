@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['time',['Time',['../classcrtc_1_1_time.html',1,'crtc']]],
-  ['typedarray',['TypedArray',['../classcrtc_1_1_typed_array.html',1,'crtc']]]
+  ['worker',['Worker',['../classcrtc_1_1_worker.html',1,'crtc']]]
 ];
