@@ -44,10 +44,6 @@ using namespace crtc;
 volatile int ModuleInternal::pending_events = 0;
 
 void Module::Init() {
-#ifdef CRTC_OS_OSX
-  rtc::InitCocoaMultiThreading();
-#endif
-
 #ifdef CRTC_OS_WIN
   rtc::EnsureWinsockInit();
 #endif
