@@ -12,7 +12,7 @@ WebRTC uses Real-Time Protocol to transfer audio and video.
 
 ## API Documentation
 
-[libcrtc](https://rawgit.com/vmolsa/libcrtc/master/doc/index.html)
+[libcrtc](https://rawgit.com/vmolsa/libcrtc/v1.x/doc/index.html)
 
 ## Licence & copyright
 
