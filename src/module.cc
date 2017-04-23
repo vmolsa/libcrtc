@@ -33,7 +33,6 @@
 #include "webrtc/base/event_tracer.h"
 #include "webrtc/system_wrappers/include/trace.h"
 #include "webrtc/base/logging.h"
-#include "webrtc/base/maccocoathreadhelper.h"
 
 #ifdef CRTC_OS_WIN
   #include "webrtc/base/win32socketinit.h"
