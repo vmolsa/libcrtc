@@ -66,9 +66,10 @@ void Module::Dispose() {
 
 bool Module::DispatchEvents(bool kForever) {
   bool result = false;
-   
+  rtc::Thread *thread = rtc::ThreadManager::Instance()->CurrentThread();
+
   do {
-    result = (rtc::AtomicOps::AcquireLoad(&ModuleInternal::pending_events) > 0 && rtc::Thread::Current()->ProcessMessages(kForever ? 1000 : 0));
+    result = (rtc::AtomicOps::AcquireLoad(&ModuleInternal::pending_events) > 0 && thread->ProcessMessages(kForever ? 1000 : 0));
   } while (kForever && result);
 
   return result;
