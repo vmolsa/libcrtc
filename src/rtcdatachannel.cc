@@ -35,7 +35,9 @@ RTCDataChannelInternal::RTCDataChannelInternal(const rtc::scoped_refptr<webrtc::
 {
   _channel->RegisterObserver(this);
 
-  if (_channel->state() == webrtc::DataChannelInterface::kOpen) {
+  if (_channel->state() == webrtc::DataChannelInterface::kOpen || 
+      _channel->state() == webrtc::DataChannelInterface::kConnecting) 
+  {
     _event = Event::New();
   }
 }
