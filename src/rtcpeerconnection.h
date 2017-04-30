@@ -47,6 +47,7 @@ namespace crtc {
       
       static std::unique_ptr<rtc::Thread> network_thread;
       static std::unique_ptr<rtc::Thread> worker_thread;
+      static std::unique_ptr<rtc::Thread> signal_thread;
       static rtc::scoped_refptr<webrtc::AudioDeviceModule> audio_device;
       static rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> factory;
 
