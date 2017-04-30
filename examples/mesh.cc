@@ -10,16 +10,16 @@ using namespace crtc;
 std::vector<Let<RTCPeerConnection>> peers;
 std::vector<Let<RTCDataChannel>> channels;
 
-int open_peers = 0;
-int closed_peers = 0;
-int open_channels = 0;
-int closed_channels = 0;
-int send_ping = 0;
-int recv_ping = 0;
-int send_pong = 0;
-int recv_pong = 0;
-int messages_in = 0;
-int messages_out = 0;
+volatile int open_peers = 0;
+volatile int closed_peers = 0;
+volatile int open_channels = 0;
+volatile int closed_channels = 0;
+volatile int send_ping = 0;
+volatile int recv_ping = 0;
+volatile int send_pong = 0;
+volatile int recv_pong = 0;
+volatile int messages_in = 0;
+volatile int messages_out = 0;
 
 void RemovePeerEvents(const Let<RTCPeerConnection> &peer) {
   peer->onsignalingstatechange.Dispose();
@@ -90,7 +90,7 @@ void makePair(const std::string &left, const std::string &right,
         std::cout << left << " <-> " << right << " [OnSignalingStateChange]: have-remote-pranswer" << std::endl;
         break;
       case RTCPeerConnection::kSignalingClosed:
-        closed_peers++;
+        Atomic::Increment(&closed_peers);
 
         SetImmediate([=]() {
           RemovePeerEvents(ls);
@@ -155,13 +155,13 @@ void makePair(const std::string &left, const std::string &right,
 
   ls->ondatachannel = [=](const Let<RTCDataChannel> &dataChannel) {
     dataChannel->onopen = [=]() {
-      open_channels++;
+      Atomic::Increment(&open_channels);
       std::cout << left << " ==> " << right << " [DataChannel: " << dataChannel->Id() << ", Label: " << dataChannel->Label() << "]: Opened" << std::endl;
 
       for (int index = 0; index < 10; index++) {
         dataChannel->Send(ArrayBuffer::New("PING"));
-        send_ping++;
-        messages_out++;
+        Atomic::Increment(&send_ping);
+        Atomic::Increment(&messages_out);
       }      
     };
 
@@ -170,7 +170,7 @@ void makePair(const std::string &left, const std::string &right,
         RemoveChannelEvents(dataChannel);
       });
 
-      closed_channels++;
+      Atomic::Increment(&closed_channels);
       std::cout << left << " ==> " << right << " [DataChannel: " << dataChannel->Id() << ", Label: " << dataChannel->Label() << "]: Closed" << std::endl;
     };
 
@@ -180,16 +180,16 @@ void makePair(const std::string &left, const std::string &right,
 
     dataChannel->onmessage = [=](const Let<ArrayBuffer> &buffer, bool binary) {
       std::cout << left << " ==> " << right << " [DataChannel: " << dataChannel->Id() << ", Label: " << dataChannel->Label() << "]: Message" << std::endl;
-      messages_in++;
+      Atomic::Increment(&messages_in);
 
       if (!buffer->ToString().compare("PING")) {
-        recv_ping++;
+        Atomic::Increment(&recv_ping);
         std::cout << left << " ==> " << right << " [DataChannel: " << dataChannel->Id() << ", Label: " << dataChannel->Label() << "]: PING" << std::endl;
         dataChannel->Send(ArrayBuffer::New("PONG"));
-        send_pong++;
-        messages_out++;
+        Atomic::Increment(&send_pong);
+        Atomic::Increment(&messages_out);
       } else if (!buffer->ToString().compare("PONG")) {
-        recv_pong++;
+        Atomic::Increment(&recv_pong);
         std::cout << left << " ==> " << right << " [DataChannel: " << dataChannel->Id() << ", Label: " << dataChannel->Label() << "]: PONG" << std::endl;
       }
     };
@@ -289,16 +289,16 @@ int main() {
   Module::DispatchEvents(true);
   Module::Dispose();
 
-  std::cout << "Peers created: " << open_peers << " (expected: " << expected_count << ")" << std::endl;
-  std::cout << "Peers closed: " << closed_peers << " (expected: " << expected_count << ")" << std::endl;
-  std::cout << "Datachannels opened: " << open_channels << " (expected: " << expected_count * 10 << ")" << std::endl;
-  std::cout << "Datachannels closed: " << closed_channels << " (expected: " << expected_count * 10 << ")" << std::endl;
-  std::cout << "Messages received: " << messages_in << " (expected: " << expected_count * 10 * 10 * 2 << ")" << std::endl;
-  std::cout << "Messages sended: " << messages_out << " (expected: " << expected_count * 10 * 10 * 2 << ")" << std::endl;
-  std::cout << "Ping send count: " << send_ping << " (expected: " << expected_count * 10 * 10 << ")" << std::endl;
-  std::cout << "Ping received count: " << recv_ping << " (expected: " << expected_count * 10 * 10 << ")" << std::endl;
-  std::cout << "Pong send count: " << send_pong << " (expected: " << expected_count * 10 * 10 << ")" << std::endl;
-  std::cout << "Pong received count: " << recv_pong << " (expected: " << expected_count * 10 * 10 << ")" << std::endl;
+  std::cout << "Peers created: " << Atomic::AcquireLoad(&open_peers) << " (expected: " << expected_count << ")" << std::endl;
+  std::cout << "Peers closed: " << Atomic::AcquireLoad(&closed_peers) << " (expected: " << expected_count << ")" << std::endl;
+  std::cout << "Datachannels opened: " << Atomic::AcquireLoad(&open_channels) << " (expected: " << expected_count * 10 << ")" << std::endl;
+  std::cout << "Datachannels closed: " << Atomic::AcquireLoad(&closed_channels) << " (expected: " << expected_count * 10 << ")" << std::endl;
+  std::cout << "Messages received: " << Atomic::AcquireLoad(&messages_in) << " (expected: " << expected_count * 10 * 10 * 2 << ")" << std::endl;
+  std::cout << "Messages sended: " << Atomic::AcquireLoad(&messages_out) << " (expected: " << expected_count * 10 * 10 * 2 << ")" << std::endl;
+  std::cout << "Ping send count: " << Atomic::AcquireLoad(&send_ping) << " (expected: " << expected_count * 10 * 10 << ")" << std::endl;
+  std::cout << "Ping received count: " << Atomic::AcquireLoad(&recv_ping) << " (expected: " << expected_count * 10 * 10 << ")" << std::endl;
+  std::cout << "Pong send count: " << Atomic::AcquireLoad(&send_pong) << " (expected: " << expected_count * 10 * 10 << ")" << std::endl;
+  std::cout << "Pong received count: " << Atomic::AcquireLoad(&recv_pong) << " (expected: " << expected_count * 10 * 10 << ")" << std::endl;
 
   return 0;
 }

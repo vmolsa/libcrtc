@@ -9,7 +9,6 @@ rtc_shared_library("crtc") {
     "src/event.cc",
     "src/error.cc",
     "src/arraybuffer.cc",
-    "src/worker.cc",
     "src/async.cc",
     "src/module.cc",
     "src/rtcpeerconnection.cc",

@@ -25,14 +25,12 @@
 
 #include "crtc.h"
 #include "async.h"
-#include "worker.h"
 
 #include "webrtc/base/thread.h"
 #include "webrtc/base/asyncinvoker.h"
 
 using namespace crtc;
 
-std::unique_ptr<rtc::Thread> _worker;
 rtc::AsyncInvoker* _async;
 
 void AsyncInternal::Init() {
@@ -43,17 +41,16 @@ void AsyncInternal::Dispose() {
   delete _async;
 }
 
-void Async::Call(Functor<void()> callback, int delay, Let<Worker> ptr) {
+void Async::Call(Functor<void()> callback, int delay) {
   Let<Event> event = Event::New();
-  Let<WorkerInternal> worker(ptr);
-  rtc::Thread *target = (!worker.IsEmpty()) ? worker : rtc::Thread::Current();
+  rtc::Thread *target = rtc::ThreadManager::Instance()->CurrentThread();
 
   if (delay > 0) {
-    _async->AsyncInvokeDelayed<void>(RTC_FROM_HERE, target, [worker, callback, event]() mutable {
+    _async->AsyncInvokeDelayed<void>(RTC_FROM_HERE, target, [callback, event]() mutable {
       callback();
     }, delay);
   } else {
-    _async->AsyncInvoke<void>(RTC_FROM_HERE, target, [worker, callback, event]() mutable {
+    _async->AsyncInvoke<void>(RTC_FROM_HERE, target, [callback, event]() mutable {
       callback();
     });
   }

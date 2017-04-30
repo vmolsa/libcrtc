@@ -393,20 +393,10 @@ template <typename R, typename... Args> class CRTC_EXPORT Functor<R(Args...)> {
 
 typedef Functor<void()> Callback;
 
-class CRTC_EXPORT Worker : virtual public Reference {
-    CRTC_PRIVATE(Worker);
-  public:
-    static Let<Worker> New(const Callback &runnable = Callback());
-    static Let<Worker> This();
-  protected:
-    explicit Worker() { }
-    ~Worker() override { }
-};
-
 class CRTC_EXPORT Async {
     CRTC_STATIC(Async);
   public:
-    static void Call(Callback callback, int delay = 0, Let<Worker> worker = Worker::This());
+    static void Call(Callback callback, int delay = 0);
 };
 
 /// \sa https://developer.mozilla.org/en/docs/Web/API/Window/SetImmediate
@@ -464,7 +454,7 @@ template <typename... Args> class Promise : virtual public Reference {
     typedef ErrorCallback RejectedCallback;
     typedef Functor<void(const FullFilledCallback &resolve, const RejectedCallback &reject)> ExecutorCallback;
 
-    inline static Let<Promise<Args...>> New(const ExecutorCallback &executor, const Let<Worker> &worker = Worker::This()) {
+    inline static Let<Promise<Args...>> New(const ExecutorCallback &executor) {
       Let<Promise<Args...>> self = Let<Promise<Args...>>::New();
 
       RejectedCallback reject([=](const Let<Error> &error) {
@@ -490,7 +480,7 @@ template <typename... Args> class Promise : virtual public Reference {
           reject(error);
         }, [=]() {
           reject(error);
-        }), 0, worker);
+        }), 0);
       });
 
       FullFilledCallback resolve([=](Args... args) {
@@ -512,7 +502,7 @@ template <typename... Args> class Promise : virtual public Reference {
           }
         }, [=]() {
           asyncReject(Error::New("Reference Lost.", __FILE__, __LINE__));
-        }), 0, worker);
+        }), 0);
       }, [=]() {
         asyncReject(Error::New("Reference Lost.", __FILE__, __LINE__));
       });
