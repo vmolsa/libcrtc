@@ -32,7 +32,6 @@ using namespace crtc;
 
 std::unique_ptr<rtc::Thread> RTCPeerConnectionInternal::network_thread;
 std::unique_ptr<rtc::Thread> RTCPeerConnectionInternal::worker_thread;
-std::unique_ptr<rtc::Thread> RTCPeerConnectionInternal::signal_thread;
 rtc::scoped_refptr<webrtc::AudioDeviceModule> RTCPeerConnectionInternal::audio_device;
 rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> RTCPeerConnectionInternal::factory;
 
@@ -59,13 +58,6 @@ void RTCPeerConnectionInternal::Init() {
     
   }
 
-  signal_thread = rtc::Thread::Create();
-  signal_thread->SetName("signal", nullptr);
-  
-  if (!signal_thread->Start()) {
-    
-  }
-
   audio_device = webrtc::AudioDeviceModule::Create(0, webrtc::AudioDeviceModule::kDummyAudio);
 
   if (!audio_device->Initialized()) {
@@ -75,7 +67,7 @@ void RTCPeerConnectionInternal::Init() {
   factory = webrtc::CreatePeerConnectionFactory(
     network_thread.get(),
     worker_thread.get(),
-    signal_thread.get(),
+    rtc::ThreadManager::Instance()->CurrentThread(),
     audio_device.get(),
     nullptr, // cricket::WebRtcVideoEncoderFactory*
     nullptr); // cricket::WebRtcVideoDecoderFactory*
@@ -84,13 +76,11 @@ void RTCPeerConnectionInternal::Init() {
 void RTCPeerConnectionInternal::Dispose() {
   network_thread->Stop();
   worker_thread->Stop();
-  signal_thread->Stop();
 
   factory.release();
   audio_device.release();
   network_thread.release();
   worker_thread.release();
-  signal_thread.release();
 }
 
 RTCPeerConnectionInternal::RTCPeerConnectionInternal(const RTCConfiguration &config) : _factory(factory) {
