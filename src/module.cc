@@ -42,13 +42,75 @@
 using namespace crtc;
 
 volatile int ModuleInternal::pending_events = 0;
+Callback asyncCallback;
+
+class Thread : public rtc::Thread {
+  public:
+
+    template <class ReturnT, class FunctorT>
+    ReturnT Invoke(const rtc::Location& posted_from, const FunctorT& functor) {
+      asyncCallback();
+      return rtc::Thread::Invoke<ReturnT>(posted_from, functor);
+    }
+
+    inline void Send(const rtc::Location& posted_from,
+                    rtc::MessageHandler* phandler,
+                    uint32_t id = 0,
+                    rtc::MessageData* pdata = nullptr) override
+    {
+      asyncCallback();
+      rtc::Thread::Send(posted_from, phandler, id, pdata);
+    }
+
+    inline void Post(const rtc::Location& posted_from,
+                    rtc::MessageHandler* phandler,
+                    uint32_t id = 0,
+                    rtc::MessageData* pdata = nullptr,
+                    bool time_sensitive = false) override
+    { 
+      asyncCallback();
+      rtc::Thread::Post(posted_from, phandler, id, pdata, time_sensitive);
+    }
+
+    inline void PostDelayed(const rtc::Location& posted_from,
+                           int cmsDelay,
+                           rtc::MessageHandler* phandler,
+                           uint32_t id = 0,
+                           rtc::MessageData* pdata = nullptr) override
+    {
+      asyncCallback(); 
+      rtc::Thread::PostDelayed(posted_from, cmsDelay, phandler, id, pdata);
+    }
+
+    inline void PostAt(const rtc::Location& posted_from,
+                      int64_t tstamp,
+                      rtc::MessageHandler* phandler,
+                      uint32_t id = 0,
+                      rtc::MessageData* pdata = nullptr) override
+    {
+      asyncCallback();
+      rtc::Thread::PostAt(posted_from, tstamp, phandler, id, pdata);
+    }
+
+    inline void PostAt(const rtc::Location& posted_from,
+                      uint32_t tstamp,
+                      rtc::MessageHandler* phandler,
+                      uint32_t id = 0,
+                      rtc::MessageData* pdata = nullptr) override
+    {
+      asyncCallback();
+      rtc::Thread::PostAt(posted_from, tstamp, phandler, id, pdata);
+    }
+};
+
+Thread currentThread;
 
 void Module::Init() {
 #ifdef CRTC_OS_WIN
   rtc::EnsureWinsockInit();
 #endif
-
-  rtc::ThreadManager::Instance()->WrapCurrentThread();
+  rtc::ThreadManager::Instance()->SetCurrentThread(&currentThread);
+  //rtc::ThreadManager::Instance()->WrapCurrentThread();
   //webrtc::Trace::CreateTrace();
   //rtc::LogMessage::LogToDebug(rtc::LS_ERROR);
 
@@ -73,4 +135,12 @@ bool Module::DispatchEvents(bool kForever) {
   } while (kForever && result);
 
   return result;
+}
+
+void Module::RegisterAsyncCallback(const Callback &callback) {
+  asyncCallback = callback;
+}
+
+void Module::UnregisterAsyncCallback() {
+  asyncCallback.Dispose();
 }
