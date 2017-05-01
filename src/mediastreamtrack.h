@@ -28,6 +28,8 @@
 #define CRTC_MEDIASTREAMTRACK_H
 
 #include "crtc.h"
+#include "event.h"
+
 #include "webrtc/api/mediastreaminterface.h"
 
 namespace crtc {

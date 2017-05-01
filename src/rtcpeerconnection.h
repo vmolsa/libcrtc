@@ -28,6 +28,7 @@
 #define CRTC_RTCPEERCONNECTION_H
 
 #include "crtc.h"
+#include "event.h"
 
 #include "webrtc/api/peerconnectioninterface.h"
 #include "webrtc/media/engine/webrtcvideodecoderfactory.h"

@@ -28,6 +28,7 @@
 #define CRTC_MODULE_H
 
 #include "crtc.h"
+#include "event.h"
 
 namespace crtc {
   class ModuleInternal {

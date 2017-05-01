@@ -24,17 +24,22 @@
 *
 */
 
-#ifndef CRTC_ASYNC_H
-#define CRTC_ASYNC_H
+#ifndef CRTC_EVENT_H
+#define CRTC_EVENT_H
 
 #include "crtc.h"
-#include "event.h"
 
 namespace crtc {
-  class AsyncInternal {
+  class CRTC_EXPORT Event : virtual public Reference {
+      CRTC_PRIVATE(Event);
+      friend class Let<Event>;
+
     public:
-      static void Init();
-      static void Dispose();
+      static Let<Event> New();
+
+    protected:
+      explicit Event();
+      ~Event() override;
   };
 };
 

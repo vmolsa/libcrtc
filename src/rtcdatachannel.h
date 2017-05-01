@@ -28,6 +28,7 @@
 #define CRTC_RTCDATACHANNEL_H
 
 #include "crtc.h"
+#include "event.h"
 
 #include "webrtc/api/datachannelinterface.h"
 
