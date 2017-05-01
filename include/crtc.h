@@ -727,18 +727,9 @@ class CRTC_EXPORT Module {
     static void Init();
     static bool DispatchEvents(bool kForever = false);
     static void Dispose();
-};
 
-class CRTC_EXPORT Event : virtual public Reference {
-    CRTC_PRIVATE(Event);
-    friend class Let<Event>;
-
-  public:
-    static Let<Event> New();
-
-  protected:
-    explicit Event();
-    ~Event() override;
+    static void RegisterAsyncCallback(const Callback &callback);
+    static void UnregisterAsyncCallback();
 };
 
 /// \sa https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamTrack
