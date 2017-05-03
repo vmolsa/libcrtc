@@ -134,12 +134,12 @@ shutil.copyfile(os.path.join(webrtc_src_dir, 'webrtc', 'LICENSE'), os.path.join(
 shutil.copyfile(os.path.join(webrtc_src_dir, 'webrtc', 'LICENSE_THIRD_PARTY'), os.path.join(dist_dir, 'WEBRTC_LICENSE_THIRD_PARTY'))
 
 if sys.platform.startswith('linux'):
-  shutil.copy(os.path.join(out_dir, 'libcrtc.so'), dist_lib_dir)
+  shutil.copy(os.path.join(os.path.join(out_dir,  target_os,  target_cpu), 'libcrtc.so'), dist_lib_dir)
 
 elif sys.platform.startswith('win32'):
-  shutil.copy(os.path.join(out_dir, 'libcrtc.dll'), dist_lib_dir)
+  shutil.copy(os.path.join(os.path.join(out_dir,  target_os,  target_cpu), 'libcrtc.dll'), dist_lib_dir)
 
 elif sys.platform.startswith('darwin'):
-  shutil.copy(os.path.join(out_dir, 'libcrtc.dylib'), dist_lib_dir)
+  shutil.copy(os.path.join(os.path.join(out_dir,  target_os,  target_cpu), 'libcrtc.dylib'), dist_lib_dir)
 
 build_archive()
