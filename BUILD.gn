@@ -33,7 +33,7 @@ rtc_shared_library("crtc") {
       "CRTC_OS_OSX"
     ]
   }
-  
+
   deps = [
     "//third_party/libyuv",
     "//webrtc/pc:libjingle_peerconnection",
@@ -54,20 +54,6 @@ rtc_shared_library("crtc") {
 rtc_executable("mesh") {
   sources = [
     "examples/mesh.cc",
-  ]
-
-  deps = [
-    ":crtc",
-  ]
-
-  include_dirs = [
-    "include"
-  ]
-}
-
-rtc_executable("peerconnection") {
-  sources = [
-    "examples/peerconnection.cc",
   ]
 
   deps = [
