@@ -33,15 +33,7 @@ rtc_shared_library("crtc") {
       "CRTC_OS_OSX"
     ]
   }
-
-  cflags = [
-    "-fexceptions",
-  ]
-
-  cflags_cc = [
-    "-fexceptions",
-  ]
-
+  
   deps = [
     "//third_party/libyuv",
     "//webrtc/pc:libjingle_peerconnection",
