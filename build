@@ -14,10 +14,19 @@ dist_lib_dir = os.path.join(dist_dir, 'lib')
 out_dir = os.path.join(root_dir, 'out')
 third_party_dir = os.path.join(root_dir, '3dparty')
 
+fetch_cmd = 'fetch'
+gclient_cmd = 'gclient'
+gn_cmd = 'gn'
+
 target_platform = sys.platform
 
 if sys.platform.startswith('linux'):
   target_platform = 'linux'
+elif sys.platform.startswith('win32'):
+  target_platform = 'win32'
+  fetch_cmd = 'fetch.bat'
+  gclient_cmd = 'glient.bat'
+  gn_cmd = 'gn.bat'
 
 target_os = target_platform
 target_cpu = platform.machine()
@@ -74,7 +83,7 @@ if not os.path.exists(webrtc_sync):
   os.chdir(webrtc_dir)
 
   if not os.path.exists(webrtc_src_dir):
-    subprocess.call(['fetch', '--nohooks', 'webrtc'])
+    subprocess.call([fetch_cmd, '--nohooks', 'webrtc'])
   else:
     os.chdir(webrtc_src_dir)
 
@@ -89,11 +98,11 @@ if not os.path.exists(webrtc_sync):
 
     os.chdir(webrtc_dir)
   
-  subprocess.call(['gclient', 'sync', '--with_branch_heads', '--force'])
+  subprocess.call([gclient_cmd, 'sync', '--with_branch_heads', '--force'])
 
   os.chdir(webrtc_src_dir)
 
-  subprocess.call(['git', 'checkout', '-b', 'libcrtc', 'refs/remotes/branch-heads/58'])
+  subprocess.call(['git', 'checkout', '-b', 'libcrtc', 'refs/remotes/branch-heads/59'])
 
   if os.path.exists(os.path.join(webrtc_src_dir, 'BUILD.gn')):
     os.remove(os.path.join(webrtc_src_dir, 'BUILD.gn'))
@@ -107,7 +116,7 @@ if not os.path.exists(webrtc_sync):
   os.chdir(root_dir)
 
 os.chdir(webrtc_src_dir)
-subprocess.call(['gn', 'gen', os.path.join(out_dir,  target_os,  target_cpu), gn_flags])
+subprocess.call([gn_cmd, 'gen', os.path.join(out_dir,  target_os,  target_cpu), gn_flags])
 os.chdir(root_dir)
 
 if os.environ.get('BUILD_WEBRTC_EXAMPLES') == 'true':
