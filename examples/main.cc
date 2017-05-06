@@ -17,7 +17,7 @@ int main() {
 
   Async::Call([]() {
     printf("Hello from Worker...\n");
-  }, 5000, Worker::New());
+  });
 
   printf("Dispatch Events...\n");
 
