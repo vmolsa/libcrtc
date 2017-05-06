@@ -68,7 +68,6 @@ rtc_executable("mesh") {
 group("crtc-examples") {
   public_deps = [
     ":mesh",
-    ":peerconnection",
   ]
 }
 
