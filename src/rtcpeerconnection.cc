@@ -492,7 +492,7 @@ void RTCPeerConnectionInternal::OnIceConnectionReceivingChange(bool receiving) {
 }
 
 // DEPRECATED -> //
-/*
+
 void RTCPeerConnectionInternal::OnAddStream(webrtc::MediaStreamInterface* stream) {
 
 }
@@ -503,8 +503,8 @@ void RTCPeerConnectionInternal::OnDataChannel(webrtc::DataChannelInterface* data
 
 void RTCPeerConnectionInternal::OnRemoveStream(webrtc::MediaStreamInterface* stream) {
 
-}  
-*/
+} 
+
 // <- DEPRECATED //
 
 
