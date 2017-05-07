@@ -97,6 +97,8 @@ RTCDataChannel::State RTCDataChannelInternal::ReadyState() {
     case webrtc::DataChannelInterface::kClosed:
       return RTCDataChannel::State::kClosed;
   }
+
+  return RTCDataChannel::State::kClosed;
 }
 
 void RTCDataChannelInternal::Close() {
