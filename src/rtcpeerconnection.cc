@@ -35,13 +35,7 @@ std::unique_ptr<rtc::Thread> RTCPeerConnectionInternal::worker_thread;
 rtc::scoped_refptr<webrtc::AudioDeviceModule> RTCPeerConnectionInternal::audio_device;
 rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> RTCPeerConnectionInternal::factory;
 
-RTCPeerConnection::RTCIceServers RTCPeerConnection::defaultIceServers = { 
-  {
-    .urls = {
-      "stun:stun.l.google.com:19302"
-    }
-  }
-};
+RTCPeerConnection::RTCIceServers RTCPeerConnection::defaultIceServers;
 
 void RTCPeerConnectionInternal::Init() {
   network_thread = rtc::Thread::CreateWithSocketServer();
@@ -71,6 +65,12 @@ void RTCPeerConnectionInternal::Init() {
     audio_device.get(),
     nullptr, // cricket::WebRtcVideoEncoderFactory*
     nullptr); // cricket::WebRtcVideoDecoderFactory*
+
+  RTCIceServer iceserver;
+
+  iceserver.urls.push_back(std::string("stun:stun.l.google.com:19302"));
+
+  RTCPeerConnection::defaultIceServers.push_back(iceserver);
 }
 
 void RTCPeerConnectionInternal::Dispose() {
