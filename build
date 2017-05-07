@@ -62,6 +62,9 @@ webrtc_sync = os.path.join(third_party_dir, '.webrtc_sync')
 
 gn_flags = '--args=is_debug=false rtc_include_tests=false use_ozone=true is_desktop_linux=false rtc_use_gtk=false clang_use_chrome_plugins=true rtc_enable_protobuf=false'
 
+if (target_os == 'linux'):
+  gn_flags += ' is_clang=false'
+
 if (target_os != target_platform):
   gn_flags += ' target_os="' + target_os + '"'
 
