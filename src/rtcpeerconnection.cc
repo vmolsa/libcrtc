@@ -491,23 +491,6 @@ void RTCPeerConnectionInternal::OnIceConnectionReceivingChange(bool receiving) {
   //oniceconnectionstatechange();
 }
 
-// DEPRECATED -> //
-
-void RTCPeerConnectionInternal::OnAddStream(webrtc::MediaStreamInterface* stream) {
-
-}
-
-void RTCPeerConnectionInternal::OnDataChannel(webrtc::DataChannelInterface* data_channel) {
-  
-}
-
-void RTCPeerConnectionInternal::OnRemoveStream(webrtc::MediaStreamInterface* stream) {
-
-} 
-
-// <- DEPRECATED //
-
-
 Let<RTCPeerConnection> RTCPeerConnection::New(const RTCPeerConnection::RTCConfiguration &config) {
   return Let<RTCPeerConnectionInternal>::New(config);
 }
