@@ -60,17 +60,6 @@ webrtc_src_dir = os.path.join(webrtc_dir, 'src')
 webrtc_crtc_dir = os.path.join(webrtc_src_dir, 'crtc')
 webrtc_sync = os.path.join(third_party_dir, '.webrtc_sync')
 
-gn_flags = '--args=is_debug=false rtc_include_tests=false use_ozone=true is_desktop_linux=false rtc_use_gtk=false clang_use_chrome_plugins=true rtc_enable_protobuf=false'
-
-if (target_os == 'linux'):
-  gn_flags += ' is_clang=true'
-
-if (target_os != target_platform):
-  gn_flags += ' target_os="' + target_os + '"'
-
-if (target_cpu != platform.machine()):
-  gn_flags += ' target_cpu="' + target_cpu + '"'
-
 if not os.path.exists(third_party_dir):
   os.mkdir(third_party_dir)
 
@@ -119,10 +108,32 @@ if not os.path.exists(webrtc_sync):
   os.chdir(root_dir)
 
 os.chdir(webrtc_src_dir)
+gn_flags = '--args=rtc_include_tests=false rtc_enable_protobuf=false'
+
+if os.environ.get('WEBRTC_DEBUG') == 'true':
+  gn_flags += ' is_debug=true'
+else:
+  gn_flags += ' is_debug=false'
+
+if (target_os == 'ios' and target_platform == 'darwin'):
+  if not os.path.exists(os.path.join(out_dir,  target_os,  target_cpu)):
+    subprocess.call([gn_cmd, 'gen', os.path.join(out_dir,  target_os,  target_cpu), gn_flags])
+
+elif (target_os == 'linux'):
+  gn_flags += ' use_ozone=true'
+  gn_flags += ' is_desktop_linux=false'
+  gn_flags += ' rtc_use_gtk=false'
+
+if (target_os != target_platform):
+  gn_flags += ' target_os="' + target_os + '"'
+
+if (target_cpu != platform.machine()):
+  gn_flags += ' target_cpu="' + target_cpu + '"'
+
 subprocess.call([gn_cmd, 'gen', os.path.join(out_dir,  target_os,  target_cpu), gn_flags])
 os.chdir(root_dir)
 
-if os.environ.get('BUILD_WEBRTC_EXAMPLES') == 'true':
+if os.environ.get('WEBRTC_EXAMPLES') == 'true':
   subprocess.call(['ninja', '-C', os.path.join(out_dir,  target_os,  target_cpu), 'crtc-examples'])
 else:
   subprocess.call(['ninja', '-C', os.path.join(out_dir,  target_os,  target_cpu), 'crtc'])
