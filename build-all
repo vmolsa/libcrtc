@@ -24,13 +24,13 @@ elif sys.platform.startswith('darwin'):
   os.environ['WEBRTC_TARGET_CPU'] = 'x64'
   subprocess.call(['./build'])
 
-  os.environ['WEBRTC_TARGET_CPU'] = 'x64'
-  os.environ['WEBRTC_TARGET_OS'] = 'ios'
-  subprocess.call(['./build'])
+  #os.environ['WEBRTC_TARGET_CPU'] = 'x64'
+  #os.environ['WEBRTC_TARGET_OS'] = 'ios'
+  #subprocess.call(['./build'])
 
-  os.environ['WEBRTC_TARGET_CPU'] = 'x86'
-  os.environ['WEBRTC_TARGET_OS'] = 'ios'
-  subprocess.call(['./build'])
+  #os.environ['WEBRTC_TARGET_CPU'] = 'x86'
+  #os.environ['WEBRTC_TARGET_OS'] = 'ios'
+  #subprocess.call(['./build'])
 else:
   os.environ['WEBRTC_TARGET_CPU'] = 'x64'
   subprocess.call(['./build'])
