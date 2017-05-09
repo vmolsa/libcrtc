@@ -36,7 +36,12 @@ if (target_cpu == 'x86_64'):
 elif (target_cpu == 'i386'):
   target_cpu = 'x86'
 
-release_name = ''.join(subprocess.check_output(['git', 'describe', '--abbrev=0', '--tags']).split())
+release_name = 'master'
+
+try:
+  release_name = ''.join(subprocess.check_output(['git', 'describe', '--abbrev=0', '--tags']).split())
+except ValueError:
+  release_name = 'master'
 
 if (os.environ.get('WEBRTC_TARGET_OS')):
   target_os = os.environ['WEBRTC_TARGET_OS']
@@ -64,7 +69,7 @@ if not os.path.exists(third_party_dir):
   os.mkdir(third_party_dir)
 
 if not os.path.exists(depot_tools_dir):
-  subprocess.call(['git', 'clone', 'https://chromium.googlesource.com/chromium/tools/depot_tools.git', depot_tools_dir])
+  subprocess.check_call(['git', 'clone', 'https://chromium.googlesource.com/chromium/tools/depot_tools.git', depot_tools_dir])
 
 os.environ['PATH'] += os.pathsep + depot_tools_dir
 
@@ -79,22 +84,22 @@ if not os.path.exists(webrtc_sync):
   else:
     os.chdir(webrtc_src_dir)
 
-    subprocess.call(['git', 'fetch', 'origin'])
-    subprocess.call(['git', 'reset', '--hard', 'origin/master'])
-    subprocess.call(['git', 'checkout', 'origin/master'])
+    subprocess.check_call(['git', 'fetch', 'origin'])
+    subprocess.check_call(['git', 'reset', '--hard', 'origin/master'])
+    subprocess.check_call(['git', 'checkout', 'origin/master'])
     
     if subprocess.check_output(['git', 'branch', '--list', 'libcrtc']):
-      subprocess.call(['git', 'branch', '-D', 'libcrtc'])
+      subprocess.check_call(['git', 'branch', '-D', 'libcrtc'])
 
-    subprocess.call(['git', 'clean', '-f'])
+    subprocess.check_call(['git', 'clean', '-f'])
 
     os.chdir(webrtc_dir)
   
-  subprocess.call([gclient_cmd, 'sync', '--with_branch_heads', '--force'])
+  subprocess.check_call([gclient_cmd, 'sync', '--with_branch_heads', '--force'])
 
   os.chdir(webrtc_src_dir)
 
-  subprocess.call(['git', 'checkout', '-b', 'libcrtc', 'refs/remotes/branch-heads/59'])
+  subprocess.check_call(['git', 'checkout', '-b', 'libcrtc', 'refs/remotes/branch-heads/59'])
 
   if os.path.exists(os.path.join(webrtc_src_dir, 'BUILD.gn')):
     os.remove(os.path.join(webrtc_src_dir, 'BUILD.gn'))
@@ -115,11 +120,7 @@ if os.environ.get('WEBRTC_DEBUG') == 'true':
 else:
   gn_flags += ' is_debug=false'
 
-if (target_os == 'ios' and target_platform == 'darwin'):
-  if not os.path.exists(os.path.join(out_dir,  target_os,  target_cpu)):
-    subprocess.call([gn_cmd, 'gen', os.path.join(out_dir,  target_os,  target_cpu), gn_flags])
-
-elif (target_os == 'linux'):
+if (target_os == 'linux'):
   gn_flags += ' use_ozone=true'
   gn_flags += ' is_desktop_linux=false'
   gn_flags += ' rtc_use_gtk=false'
@@ -130,13 +131,13 @@ if (target_os != target_platform):
 if (target_cpu != platform.machine()):
   gn_flags += ' target_cpu="' + target_cpu + '"'
 
-subprocess.call([gn_cmd, 'gen', os.path.join(out_dir,  target_os,  target_cpu), gn_flags])
+subprocess.check_call([gn_cmd, 'gen', os.path.join(out_dir, target_os, target_cpu), gn_flags])
 os.chdir(root_dir)
 
 if os.environ.get('WEBRTC_EXAMPLES') == 'true':
-  subprocess.call(['ninja', '-C', os.path.join(out_dir,  target_os,  target_cpu), 'crtc-examples'])
+  subprocess.check_call(['ninja', '-C', os.path.join(out_dir, target_os, target_cpu), 'crtc-examples'])
 else:
-  subprocess.call(['ninja', '-C', os.path.join(out_dir,  target_os,  target_cpu), 'crtc'])
+  subprocess.check_call(['ninja', '-C', os.path.join(out_dir, target_os, target_cpu), 'crtc'])
 
 if not os.path.exists(dist_dir):
   os.mkdir(dist_dir)
@@ -157,12 +158,12 @@ shutil.copyfile(os.path.join(webrtc_src_dir, 'webrtc', 'LICENSE'), os.path.join(
 shutil.copyfile(os.path.join(webrtc_src_dir, 'webrtc', 'LICENSE_THIRD_PARTY'), os.path.join(dist_dir, 'WEBRTC_LICENSE_THIRD_PARTY'))
 
 if sys.platform.startswith('linux'):
-  shutil.copy(os.path.join(os.path.join(out_dir,  target_os,  target_cpu), 'libcrtc.so'), dist_lib_dir)
+  shutil.copy(os.path.join(os.path.join(out_dir, target_os, target_cpu), 'libcrtc.so'), dist_lib_dir)
 
 elif sys.platform.startswith('win32'):
-  shutil.copy(os.path.join(os.path.join(out_dir,  target_os,  target_cpu), 'libcrtc.dll'), dist_lib_dir)
+  shutil.copy(os.path.join(os.path.join(out_dir, target_os, target_cpu), 'libcrtc.dll'), dist_lib_dir)
 
 elif sys.platform.startswith('darwin'):
-  shutil.copy(os.path.join(os.path.join(out_dir,  target_os,  target_cpu), 'libcrtc.dylib'), dist_lib_dir)
+  shutil.copy(os.path.join(os.path.join(out_dir, target_os, target_cpu), 'libcrtc.dylib'), dist_lib_dir)
 
 build_archive()
