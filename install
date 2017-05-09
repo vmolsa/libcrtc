@@ -8,6 +8,7 @@ import subprocess
 import urllib
 
 root_path = os.getcwd()
+root_dir = os.path.dirname(os.path.realpath(__file__))
 base_url = 'https://github.com/vmolsa/libcrtc/releases/download'
 
 target_platform = sys.platform
@@ -26,14 +27,21 @@ elif (target_cpu == 'i386'):
 argc = len(sys.argv)
 argv = str(sys.argv)
 
-release_name = ''.join(subprocess.check_output(['git', 'describe', '--abbrev=0', '--tags']).split())
+release_name = 'master'
+
+os.chdir(root_dir)
+
+try:
+  release_name = ''.join(subprocess.check_output(['git', 'describe', '--abbrev=0', '--tags']).split())
+except ValueError:
+  release_name = 'master'
 
 if (argc == 3):
   release_name = str(sys.argv[2])
   print 'Tag: ' +  release_name
 
 pkg_name = 'libcrtc-' + release_name + '-' + target_os  + '-' + target_cpu + '.tar.gz'
-target_path = root_path
+target_path = os.path.join(root_dir, 'dist')
 
 if (argc >= 2):
   target_path = str(sys.argv[1])
